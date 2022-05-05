@@ -9,10 +9,14 @@ import { auth } from '../../lib/firebase/init';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import { Link } from 'react-router-dom';
+import Switch from '@mui/material/Switch';
+
+const label = { inputProps: { 'aria-label': 'Switch demo' } };
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const handleSignUpPress = () => {
     createUserWithEmailAndPassword(auth, email, password)
@@ -59,13 +63,22 @@ const Login = () => {
         variant='outlined'
       />
 
+      <div>
+        <Switch
+          {...label}
+          value={isAdmin}
+          onChange={() => setIsAdmin(!isAdmin)}
+        />
+        <p>Brat adminman</p>
+      </div>
+
       <Stack spacing={2} width={200} marginY={5} direction='column'>
         <Button variant='contained' onClick={handleLoginPress}>
           Login
         </Button>
         <Link to='/signUp'>
           <Button variant='contained' onClick={handleSignUpPress}>
-            Sing Up
+            Go to Sing Up
           </Button>
         </Link>
       </Stack>

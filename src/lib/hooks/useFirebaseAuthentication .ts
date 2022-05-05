@@ -9,9 +9,8 @@ const useFirebaseAuthentication = () => {
     const unlisten = auth.onAuthStateChanged((authUser) => {
       authUser ? setAuthUser(authUser) : setAuthUser(null);
     });
-    return () => {
-      unlisten();
-    };
+
+    return () => unlisten();
   }, []);
 
   return authUser;
