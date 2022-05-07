@@ -1,17 +1,11 @@
 import React, { useState } from 'react';
-import { TextField } from '@mui/material';
-import Stack from '@mui/material/Stack';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from 'firebase/auth';
 import { auth } from '../../lib/firebase/init';
-import Button from '@mui/material/Button';
-import Container from '@mui/material/Container';
 import { Link } from 'react-router-dom';
-import Switch from '@mui/material/Switch';
-
-const label = { inputProps: { 'aria-label': 'Switch demo' } };
+import toast from 'react-hot-toast';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -32,7 +26,9 @@ const Login = () => {
       });
   };
 
-  const handleLoginPress = () => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in
@@ -40,49 +36,54 @@ const Login = () => {
         // ...
       })
       .catch((error) => {
+        toast.error('Aka error');
         const errorCode = error.code;
         const errorMessage = error.message;
       });
   };
 
   return (
-    <Container>
-      <TextField
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        id='email'
-        label='Email'
-        variant='outlined'
-      />
-      <TextField
-        type={'password'}
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        id='password'
-        label='Password'
-        variant='outlined'
-      />
+    <div className='h-screen w-screen flex justify-center items-center bg-app-background'>
+      <form onSubmit={handleSubmit} className='space-y-3'>
+        <div>
+          <input
+            placeholder='Email'
+            type='text'
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            name=''
+            id=''
+            className='h-[50px] w-[250px] px-3'
+          />
+        </div>
+        <div>
+          <input
+            placeholder='Password'
+            type={'password'}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            name=''
+            id=''
+            className='h-[50px] w-[250px] px-3'
+          />
+        </div>
 
-      <div>
-        <Switch
-          {...label}
-          value={isAdmin}
-          onChange={() => setIsAdmin(!isAdmin)}
-        />
-        <p>Brat adminman</p>
-      </div>
+        <div className='flex flex-col justify-center items-center'>
+          <div>
+            <button
+              type='submit'
+              className='flex items-center justify-center bg-app-primary h-[50px] w-[200px] rounded-[5px] text-white text-lg font'
+            >
+              Login{' '}
+            </button>
 
-      <Stack spacing={2} width={200} marginY={5} direction='column'>
-        <Button variant='contained' onClick={handleLoginPress}>
-          Login
-        </Button>
-        <Link to='/signUp'>
-          <Button variant='contained' onClick={handleSignUpPress}>
-            Go to Sing Up
-          </Button>
-        </Link>
-      </Stack>
-    </Container>
+            <Link to='/signUp'>
+              <p className='text-center'> Go to Sing Up</p>
+            </Link>
+          </div>
+        </div>
+      </form>
+    </div>
   );
 };
 
