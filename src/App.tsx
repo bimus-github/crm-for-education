@@ -4,6 +4,8 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import useFirebaseAuthentication from './lib/hooks/useFirebaseAuthentication ';
 import Login from './pages/onboarding/Login';
 import SignUp from './pages/onboarding/SignUp';
+import TeachersPage from './pages/teachers';
+import StudentsPage from './pages/students';
 
 function App() {
   const authUser = useFirebaseAuthentication();
@@ -13,6 +15,8 @@ function App() {
       {authUser ? (
         <Routes>
           <Route path='/' element={<Home />} />
+          <Route path='/teachers' element={<TeachersPage />} />
+          <Route path='/students' element={<StudentsPage />} />
           <Route path='*' element={<Navigate to='/' replace />} />
         </Routes>
       ) : (

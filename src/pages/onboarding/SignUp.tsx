@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import Loader from '../Components/Loader';
+import Loader from '../../components/Loader';
 
 import {
   deleteObject,
