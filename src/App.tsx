@@ -1,6 +1,6 @@
 import Home from './pages/home';
 
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import useFirebaseAuthentication from './lib/hooks/useFirebaseAuthentication ';
 import Login from './pages/onboarding/Login';
 import SignUp from './pages/onboarding/SignUp';
@@ -13,6 +13,7 @@ function App() {
       {authUser ? (
         <Routes>
           <Route path='/' element={<Home />} />
+          <Route path='*' element={<Navigate to='/' replace />} />
         </Routes>
       ) : (
         <Routes>

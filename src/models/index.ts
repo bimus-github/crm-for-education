@@ -1,7 +1,7 @@
 export enum ROLE {
+  ADMIN,
   TEACHER,
   STUDENT,
-  ADMIN,
 }
 
 export type User = {
