@@ -8,6 +8,8 @@ const initialState: User = {
   lastName: '',
   phone: '',
   role: ROLE.TEACHER,
+  about: '',
+  img: '',
 };
 
 export const userSlice = createSlice({

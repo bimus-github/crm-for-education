@@ -9,8 +9,10 @@ export type User = {
   firstName: string;
   lastName: string;
   email: string;
+  about: string;
   phone: string;
   role: ROLE;
+  img: string;
 };
 
 export type School = {
@@ -22,9 +24,11 @@ export type School = {
 
 export type Student = User & {};
 
+export type Language = 'en' | 'uz' | 'ru';
+
 export type Teacher = User & {
   groups: string[];
-  languages: string[];
+  languages: Language[];
 };
 
 export type Day =
