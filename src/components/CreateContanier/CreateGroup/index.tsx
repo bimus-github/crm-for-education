@@ -1,17 +1,13 @@
-import React from "react";
-import AppLayout from "src/components/shared/layout";
-import AppCreateLayout from "src/components/shared/createLayout";
+import React from 'react';
+import AppLayout from 'src/components/shared/layout';
+import AppCreateLayout from 'src/components/shared/createLayout';
 
 function CreateGroup() {
   return (
     <AppLayout>
-      <div className=" w-full h-screen bg-app-background flex gap-2">
-        <AppCreateLayout>
-          <div className=" m-10 w-full h-full p-2 bg-white shadow-md ">
-            Create Teacher
-          </div>
-        </AppCreateLayout>
-      </div>
+      <AppCreateLayout>
+        <div className='w-full h-full bg-white shadow-md'>Create Group</div>
+      </AppCreateLayout>
     </AppLayout>
   );
 }

@@ -1,11 +1,11 @@
-import React from "react";
-import { Link, matchRoutes, useLocation } from "react-router-dom";
-import { ImRadioChecked, ImRadioUnchecked } from "react-icons/im";
+import React from 'react';
+import { Link, matchRoutes, useLocation } from 'react-router-dom';
+import { ImRadioChecked, ImRadioUnchecked } from 'react-icons/im';
 
 const routes = [
-  { path: "./createTeacher/*", title: "Teacher" },
-  { path: "./createGroup/*", title: "Group" },
-  { path: "./createStudent/*", title: "Students" },
+  { path: '/create/teacher', title: 'Teacher' },
+  { path: '/create/group', title: 'Group' },
+  { path: '/create/student', title: 'Students' },
 ];
 
 const useCurrentPath = () => {
@@ -14,8 +14,7 @@ const useCurrentPath = () => {
 
   if (routeList?.length) {
     const route = routeList[0] && routeList[0].route;
-    const route2 = routeList[1] && routeList[1].route;
-    console.log(route2);
+
     return route.path;
   }
 };
@@ -26,22 +25,25 @@ interface Props {
 
 const AppCreateLayout = ({ children }: Props) => {
   const currentPath = useCurrentPath();
-  console.log(currentPath);
+
   return (
-    <div className=" w-full h-full  flex  shadow-md bg-app-background ">
-      <nav className=" w-[200px] p-2 h-full bg-white">
-        <ul className="flex flex-col gap-2  ">
+    <div className='w-full h-full flex'>
+      <nav className='w-[200px] p-2 bg-white shadow-md py-5 h-full'>
+        <ul className='space-y-2'>
           {routes.map((route, idx) => {
-            const classes = currentPath === route.path ? " font-bold" : "";
+            const classes =
+              currentPath === route.path ? ' font-bold text-app-secondary' : '';
             return (
               <li
                 key={idx.toString()}
-                className="flex items-center justify-start gap-1"
+                className='flex items-center justify-start gap-1 mb-2'
               >
                 {currentPath === route.path ? (
-                  <ImRadioChecked size={18} />
+                  <div className='w-[20px] h-[20px] flex justify-center items-center shadow-md rounded-[99px] border-2 border-app-secondary'>
+                    <div className='w-[12px] h-[12px] rounded-[99px] bg-app-secondary'></div>
+                  </div>
                 ) : (
-                  <ImRadioUnchecked size={18} />
+                  <div className='w-[20px] h-[20px] flex justify-center items-center shadow-md rounded-[99px] border-2 border-app-secondary'></div>
                 )}
                 <Link to={route.path}>
                   <p className={`${classes}`}>{route.title}</p>
@@ -51,7 +53,8 @@ const AppCreateLayout = ({ children }: Props) => {
           })}
         </ul>
       </nav>
-      {children}
+
+      <div className='p-5 w-full h-full'>{children}</div>
     </div>
   );
 };
