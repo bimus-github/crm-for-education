@@ -1,10 +1,11 @@
-import React from 'react';
-import { Link, matchRoutes, useLocation } from 'react-router-dom';
+import React from "react";
+import { Link, matchRoutes, useLocation } from "react-router-dom";
 
 const routes = [
-  { path: '/', title: 'Home' },
-  { path: '/teachers', title: 'Teachers' },
-  { path: '/students', title: 'Students' },
+  { path: "/", title: "Home" },
+  { path: "/teachers/*", title: "Teachers" },
+  { path: "/groups/*", title: "Groups" },
+  { path: "/students/*", title: "Students" },
 ];
 
 const useCurrentPath = () => {
@@ -26,15 +27,15 @@ const AppLayout = ({ children }: Props) => {
   const currentPath = useCurrentPath();
   console.log(currentPath);
   return (
-    <div className='min-h-screen w-screen bg-app-background'>
-      <div className='flex justify-between items-center px-16 py-5 bg-app-primary shadow-md'>
+    <div className="min-h-screen w-screen bg-app-background">
+      <div className="flex justify-between items-center px-16 py-5 bg-app-primary shadow-md">
         <div>Logo</div>
 
         <nav>
-          <ul className='flex items-center space-x-5'>
+          <ul className="flex items-center space-x-5">
             {routes.map((route, idx) => {
               const classes =
-                currentPath === route.path ? 'text-white font-bold' : '';
+                currentPath === route.path ? "text-white font-bold" : "";
 
               return (
                 <li key={idx.toString()}>
