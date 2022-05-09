@@ -10,9 +10,14 @@ import GroupsPage from "./pages/groups";
 import CreateTeacher from "./components/CreateContanier/CreateTeacher";
 import CreateGroup from "./components/CreateContanier/CreateGroup";
 import CreateStudent from "./components/CreateContanier/CreateStudent";
+import { Loader } from "./components/shared/loader";
 
 function App() {
-  const authUser = useFirebaseAuthentication();
+  const { authUser, loading } = useFirebaseAuthentication();
+
+  if (loading) {
+    return <Loader />;
+  }
 
   return (
     <>
