@@ -16,12 +16,16 @@ import Loader from 'src/components/Loader';
 
 import { MdDelete } from 'react-icons/md';
 import { BsPerson } from 'react-icons/bs';
-import { Language, ROLE, Teacher } from 'src/models';
+import { Language, ROLE, User } from 'src/models';
 import { CheckboxIcon, UncheckedBoxIcon } from 'src/components/shared/icons';
+import { createUser } from 'src/lib/firebase/services/user';
+import { useAppDispatch } from 'src/store/hooks';
+import { TeachersSliceActions } from 'src/store/features/teachers';
 
 function CreateTeacher() {
-  const [data, setData] = useState({});
+  const dispatch = useAppDispatch();
 
+  const [isSaving, setIsSaving] = useState(false);
   const [img, setImg] = useState('');
   const [uploaded, setUploaded] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -50,7 +54,7 @@ function CreateTeacher() {
       },
       () => {
         getDownloadURL(upLoadTask.snapshot.ref).then((downloadUrl) => {
-          toast.error('Uploading has done successfully');
+          toast.success('Uploading has done successfully');
           setImg(downloadUrl);
           setUploaded(true);
           setIsLoading(false);
@@ -61,7 +65,9 @@ function CreateTeacher() {
 
   const onDeletImg = () => {
     setIsLoading(true);
+
     const deletRef = ref(storage, img);
+
     deleteObject(deletRef).then(() => {
       setImg('');
       setUploaded(false);
@@ -73,7 +79,6 @@ function CreateTeacher() {
   const onClear = () => {
     setAbout('');
     setEmail('');
-
     setFirstName('');
     setLastName('');
     setNumber('');
@@ -82,6 +87,7 @@ function CreateTeacher() {
     if (img !== '') {
       setIsLoading(true);
       const deletRef = ref(storage, img);
+
       deleteObject(deletRef).then(() => {
         setImg('');
         setUploaded(false);
@@ -91,7 +97,9 @@ function CreateTeacher() {
     }
   };
 
-  const onSave = () => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
     if (
       about === '' ||
       email === '' ||
@@ -101,29 +109,42 @@ function CreateTeacher() {
       !img.length
     ) {
       return toast.error('Required. Please, fill in all the boxes!');
-    } else {
-      const data: Teacher = {
-        id: '',
-        role: ROLE.TEACHER,
-        firstName: firstName,
-        lastName: lastName,
-        phone: number,
-        email,
-        about,
-        img,
-        groups: [],
-        languages: [],
-      };
+    }
 
-      setData(data);
+    const data: User = {
+      id: '',
+      role: ROLE.TEACHER,
+      firstName: firstName,
+      lastName: lastName,
+      phone: number,
+      email,
+      about,
+      img,
+      groups: [],
+      languages: [],
+    };
+
+    setIsSaving(true);
+
+    try {
+      const userId = await createUser(data);
+      dispatch(TeachersSliceActions.addTeacher({ ...data, id: userId }));
+      toast.success('Teacher has successfully been added');
+      onClear();
+      setIsSaving(false);
+    } catch (error) {
+      toast.error('There was error to add teacher');
+      setIsSaving(false);
     }
   };
-  console.log(data);
 
   return (
     <AppLayout>
       <AppCreateLayout>
-        <div className='w-full h-full flex flex-col items-center p-2 bg-white shadow-md'>
+        <form
+          onSubmit={handleSubmit}
+          className='w-full h-full flex flex-col items-center p-2 bg-white shadow-md'
+        >
           <div className=' w-full h-auto flex items-center justify-center my-2'>
             <p className=' font-bold font-serif text-lg'>Create Teacher</p>
           </div>
@@ -284,13 +305,14 @@ function CreateTeacher() {
             <div className=' w-full flex-[1] h-full flex items-center justify-center gap-10'>
               <button
                 onClick={onClear}
-                type='submit'
+                disabled={isSaving}
+                type='button'
                 className=' w-[150px] h-[30px] rounded-md pl-2 bg-orange-400 text-white font-bold '
               >
-                Clear
+                Cancel
               </button>
               <button
-                onClick={onSave}
+                disabled={isSaving}
                 type='submit'
                 className=' w-[150px] h-[30px] rounded-md pl-2 bg-app-primary text-white font-bold '
               >
@@ -298,7 +320,7 @@ function CreateTeacher() {
               </button>
             </div>
           </div>
-        </div>
+        </form>
       </AppCreateLayout>
     </AppLayout>
   );

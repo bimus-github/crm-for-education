@@ -13,6 +13,8 @@ export type User = {
   phone: string;
   role: ROLE;
   img: string;
+  groups?: string[];
+  languages?: Language[];
 };
 
 export type School = {
@@ -22,14 +24,7 @@ export type School = {
   teachers: string[];
 };
 
-export type Student = User & {};
-
 export type Language = 'en' | 'uz' | 'ru';
-
-export type Teacher = User & {
-  groups: string[];
-  languages: Language[];
-};
 
 export type Day =
   | 'Monday'
