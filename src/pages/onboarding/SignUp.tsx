@@ -14,11 +14,12 @@ import { auth, storage } from 'src/lib/firebase/init';
 import { MdDelete, MdCloudUpload } from 'react-icons/md';
 import toast from 'react-hot-toast';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { ROLE, User } from 'src/models';
-import { SelectRole } from 'src/components/signup/SelectRole';
+import { ROLE, School, User } from 'src/models';
 import { createUser } from 'src/lib/firebase/services/user';
 import { useAppDispatch } from 'src/store/hooks';
 import { UserActions } from 'src/store/features/user';
+import { createSchool } from 'src/lib/firebase/services/school';
+import { SchoolSliceActions } from 'src/store/features/school';
 
 const SignUp = () => {
   const dispatch = useAppDispatch();
@@ -33,11 +34,9 @@ const SignUp = () => {
   const [about, setAbout] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [role, setRole] = useState(ROLE.ADMIN);
+  const [isSaving, setIsSaving] = useState(false);
 
   const onUpload = (e: any) => {
-    console.log('hello');
-
     setIsLoading(true);
 
     const imageFile = e.target.files[0];
@@ -55,7 +54,7 @@ const SignUp = () => {
       },
       () => {
         getDownloadURL(upLoadTask.snapshot.ref).then((downloadUrl) => {
-          toast.error('Uploading has done successfully');
+          toast.success('Uploading has done successfully');
           setImg(downloadUrl);
           setUploaded(true);
           setIsLoading(false);
@@ -82,6 +81,8 @@ const SignUp = () => {
       return toast.error('Required. Please, upload school logo');
     }
 
+    setIsSaving(true);
+
     createUserWithEmailAndPassword(auth, email, password)
       .then(async (userCredential) => {
         // const user = userCredential.user;
@@ -95,12 +96,28 @@ const SignUp = () => {
           role: ROLE.ADMIN,
           about: '',
           img: '',
+          school: '',
+        };
+
+        const schoolDoc: School = {
+          id: '',
+          logo: img,
+          name: school,
+          teachers: [],
+          admins: [email],
         };
 
         try {
-          const userId = await createUser(user);
+          const schoolId = await createSchool(schoolDoc);
+          const userId = await createUser({ ...user, school: schoolId });
+
           dispatch(UserActions.setUser({ ...user, id: userId }));
+          dispatch(
+            SchoolSliceActions.setSchool({ ...schoolDoc, id: schoolId })
+          );
+          setIsSaving(false);
         } catch (error) {
+          setIsSaving(false);
           toast.error('There was error to sign up');
         }
       })
@@ -232,14 +249,15 @@ const SignUp = () => {
           />
         </div>
 
-        <SelectRole selected={role} setSelected={(role) => setRole(role)} />
+        {/* <SelectRole selected={role} setSelected={(role) => setRole(role)} /> */}
 
         <div>
           <button
+            disabled={isSaving}
             type='submit'
-            className=' w-[400px] h-[40px] rounded-md pl-2 bg-app-primary text-white font-bold mt-5'
+            className='w-[400px] h-[40px] rounded-md pl-2 bg-app-primary disabled:bg-gray-300 text-white font-bold mt-5'
           >
-            Save
+            {isSaving ? 'Loading...' : 'Save'}
           </button>
         </div>
       </form>

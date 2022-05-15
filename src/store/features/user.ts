@@ -10,6 +10,7 @@ const initialState: User = {
   role: ROLE.TEACHER,
   about: '',
   img: '',
+  school: '',
 };
 
 export const userSlice = createSlice({
