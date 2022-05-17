@@ -1,26 +1,26 @@
-import Home from "./pages/home";
+import Home from './pages/home';
 
-import { Routes, Route, Navigate } from "react-router-dom";
-import Login from "./pages/onboarding/Login";
-import SignUp from "./pages/onboarding/SignUp";
-import TeachersPage from "./pages/teachers";
-import StudentsPage from "./pages/students";
-import GroupsPage from "./pages/groups";
-import CreateTeacher from "./components/CreateContanier/CreateTeacher";
-import CreateGroup from "./components/CreateContanier/CreateGroup";
-import CreateStudent from "./components/CreateContanier/CreateStudent";
-import { Loader } from "./components/shared/loader";
-import { useAppDispatch } from "./store/hooks";
-import { useEffect, useState } from "react";
-import { getAllUsers, getCurrentUser } from "./lib/firebase/services/user";
-import { auth, firestore } from "./lib/firebase/init";
-import { getSchool } from "./lib/firebase/services/school";
-import { UserActions } from "./store/features/user";
-import { UserSliceActions } from "./store/features/users";
-import { SchoolSliceActions } from "./store/features/school";
-import { User } from "firebase/auth";
-import { getGroup } from "./lib/firebase/services/group";
-import { GroupActions } from "./store/features/group";
+import { Routes, Route, Navigate } from 'react-router-dom';
+import Login from './pages/onboarding/Login';
+import SignUp from './pages/onboarding/SignUp';
+import TeachersPage from './pages/teachers';
+import StudentsPage from './pages/students';
+import GroupsPage from './pages/groups';
+import CreateTeacher from './components/CreateContanier/CreateTeacher';
+import CreateGroup from './components/CreateContanier/CreateGroup';
+import CreateStudent from './components/CreateContanier/CreateStudent';
+import { Loader } from './components/shared/loader';
+import { useAppDispatch } from './store/hooks';
+import { useEffect, useState } from 'react';
+import { getAllUsers, getCurrentUser } from './lib/firebase/services/user';
+import { auth } from './lib/firebase/init';
+import { getSchool } from './lib/firebase/services/school';
+import { UserActions } from './store/features/user';
+import { UserSliceActions } from './store/features/users';
+import { SchoolSliceActions } from './store/features/school';
+import { User } from 'firebase/auth';
+import { getAllGroups } from './lib/firebase/services/group';
+import { GroupsSliceActions } from './store/features/groups';
 
 function App() {
   const dispatch = useAppDispatch();
@@ -38,8 +38,7 @@ function App() {
         const userDoc = await getCurrentUser(authUser.email as string);
         const school = await getSchool(authUser.email);
         const users = await getAllUsers(school.id);
-        // const group = await getGroup();
-        console.log(school.id);
+        const groups = await getAllGroups(school.id);
 
         if (userDoc) {
           dispatch(UserActions.setUser(userDoc));
@@ -47,7 +46,7 @@ function App() {
 
         dispatch(UserSliceActions.addMultipleUsers(users));
         dispatch(SchoolSliceActions.setSchool(school));
-        // dispatch(GroupActions.setGroup(group));
+        dispatch(GroupsSliceActions.addMultipleGroups(groups));
 
         return setUser(authUser);
       }
@@ -60,10 +59,6 @@ function App() {
     return () => unlisten();
   }, []);
 
-  useEffect(() => {
-    firestore.app;
-  }, []);
-
   if (loading) {
     return <Loader />;
   }
@@ -72,19 +67,20 @@ function App() {
     <>
       {user ? (
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/teachers" element={<TeachersPage />} />
-          <Route path="/students" element={<StudentsPage />} />
-          <Route path="/groups" element={<GroupsPage />} />
-          <Route path="/create/teacher" element={<CreateTeacher />} />
-          <Route path="/create/student" element={<CreateStudent />} />
-          <Route path="/create/group" element={<CreateGroup />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path='/' element={<Home />} />
+          <Route path='/teachers' element={<TeachersPage />} />
+          <Route path='/students' element={<StudentsPage />} />
+          <Route path='/groups' element={<GroupsPage />} />
+          <Route path='/create/teacher' element={<CreateTeacher />} />
+          <Route path='/create/student' element={<CreateStudent />} />
+          <Route path='/create/group' element={<CreateGroup />} />
+          <Route path='*' element={<Navigate to='/' replace />} />
         </Routes>
       ) : (
         <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/signUp" element={<SignUp />} />
+          <Route path='/' element={<Login />} />
+          <Route path='/signUp' element={<SignUp />} />
+          <Route path='*' element={<Navigate to='/' replace />} />
         </Routes>
       )}
     </>
