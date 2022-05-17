@@ -1,8 +1,9 @@
-import { configureStore } from '@reduxjs/toolkit';
-import userSlice from './features/user';
-import teachersSlice from './features/teachers';
-import usersSlice from './features/users';
-import schoolSlice from './features/school';
+import { configureStore } from "@reduxjs/toolkit";
+import userSlice from "./features/user";
+import teachersSlice from "./features/teachers";
+import usersSlice from "./features/users";
+import schoolSlice from "./features/school";
+import groupSlice from "./features/group";
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
     teachersSlice,
     schoolSlice,
     usersSlice,
+    groupSlice,
   },
 });
 
