@@ -23,6 +23,11 @@ export const usersSlice = createSlice({
 
       state[user.id] = user;
     },
+    removeUser: (state, action: PayloadAction<User>) => {
+      const user = action.payload;
+
+      delete state[user.id];
+    },
   },
 });
 
