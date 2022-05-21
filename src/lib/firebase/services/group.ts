@@ -1,15 +1,16 @@
 import {
   collection,
+  deleteDoc,
   doc,
   getDocs,
   query,
   setDoc,
   where,
-} from 'firebase/firestore';
-import { Group } from 'src/models';
-import { firestore } from '../init';
+} from "firebase/firestore";
+import { Group } from "src/models";
+import { firestore } from "../init";
 
-export const GROUP_PATH = 'groups';
+export const GROUP_PATH = "groups";
 
 export const createGroup = async (group: Group) => {
   const docRef = doc(collection(firestore, GROUP_PATH));
@@ -22,7 +23,7 @@ export const createGroup = async (group: Group) => {
 export const getAllGroups = async (school: string) => {
   const q = query(
     collection(firestore, GROUP_PATH),
-    where('school', '==', school)
+    where("school", "==", school)
   );
 
   const groups: Group[] = [];
@@ -33,4 +34,8 @@ export const getAllGroups = async (school: string) => {
   });
 
   return groups;
+};
+
+export const deleteGroup = async (group: string) => {
+  deleteDoc(doc(firestore, GROUP_PATH, group));
 };

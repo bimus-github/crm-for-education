@@ -14,8 +14,11 @@ export type User = {
   phone: string;
   role: ROLE;
   img: string;
-  groups?: string[];
   languages?: Language[];
+  sale?: string;
+  teacher?: string;
+  group?: string;
+  startedTime: string;
 };
 
 export type School = {
@@ -59,12 +62,12 @@ export type Group = {
   name: string;
   language: {};
   monthlyBill: {};
+  startedTime: string;
   school: string;
   teacher: {
     user: string;
     monthlyBillPercentage: string;
   };
-  students: [];
   schedule: {
     days: {};
     time: {

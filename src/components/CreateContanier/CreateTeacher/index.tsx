@@ -117,15 +117,16 @@ function CreateTeacher() {
     const data: User = {
       id: "",
       role: ROLE.TEACHER,
+
       firstName: firstName,
       lastName: lastName,
       phone: number,
       email,
       about,
       img,
-      groups: [],
       languages: langs,
       school: schoolSlice.id,
+      startedTime: Date.now().toString(),
     };
 
     setIsSaving(true);
@@ -136,8 +137,17 @@ function CreateTeacher() {
       const userId = await createUser(data);
       dispatch(UserActions.setUser({ ...data, id: userId }));
       toast.success("Teacher has successfully been added");
-      onClear();
+      setAbout("");
+      setEmail("");
+      setFirstName("");
+      setLastName("");
+      setNumber("");
+      setLangs([]);
       setIsSaving(false);
+      setIsLoading(true);
+      setImg("");
+      setUploaded(false);
+      setIsLoading(false);
     } catch (error) {
       toast.error("There was error to add teacher");
       setIsSaving(false);

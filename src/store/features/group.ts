@@ -14,11 +14,11 @@ const initialState: Group = {
       end: "",
     },
   },
-  students: [],
   teacher: {
     user: "",
     monthlyBillPercentage: "",
   },
+  startedTime: "",
 };
 
 export const groupSlice = createSlice({

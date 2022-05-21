@@ -19,10 +19,6 @@ function CreateGroup() {
 
   const schoolSlice = useAppSelector((state) => state.schoolSlice);
 
-  const groupSlice = useAppSelector((state) => state.groupSlice);
-
-  console.log(groupSlice);
-
   const teachers = Object.values(usersSlice).filter(
     (u) => u.role === ROLE.TEACHER
   );
@@ -51,7 +47,7 @@ function CreateGroup() {
         selectedTeacher.name.toLocaleLowerCase()
   )[0]?.languages;
 
-  console.log(languages);
+  console.log(Object.values(usersSlice));
 
   const onClear = () => {
     setGroupName("");
@@ -93,7 +89,6 @@ function CreateGroup() {
         user: selectedTeacher.name,
         monthlyBillPercentage: percentage,
       },
-      students: [],
       schedule: {
         days: days,
         time: {
@@ -102,6 +97,7 @@ function CreateGroup() {
         },
       },
       school: schoolSlice.id,
+      startedTime: Date.now().toString(),
     };
 
     console.log(data);
@@ -112,8 +108,8 @@ function CreateGroup() {
       const groupId = await createGroup(data);
       dispatch(GroupActions.setGroup({ ...data, id: groupId }));
       toast.success("Teacher has successfully been added");
-      onClear();
       setIsSaving(false);
+      onClear();
     } catch (error) {
       console.log(error);
       toast.error("There was error to add teacher");

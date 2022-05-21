@@ -1,4 +1,4 @@
-import { User } from 'src/models';
+import { User } from "src/models";
 import {
   collection,
   where,
@@ -7,10 +7,11 @@ import {
   doc,
   setDoc,
   getDoc,
-} from 'firebase/firestore';
-import { firestore } from '../init';
+  deleteDoc,
+} from "firebase/firestore";
+import { firestore } from "../init";
 
-export const USERS_PATH = 'users';
+export const USERS_PATH = "users";
 
 export const createUser = async (user: User) => {
   const docRef = doc(collection(firestore, USERS_PATH));
@@ -25,7 +26,7 @@ export const getCurrentUser = async (user: string) => {
 
   const q = query(
     collection(firestore, USERS_PATH),
-    where('email', '==', user)
+    where("email", "==", user)
   );
 
   const querySnapshot = await getDocs(q);
@@ -40,7 +41,7 @@ export const getCurrentUser = async (user: string) => {
 export const getAllUsers = async (school: string) => {
   const q = query(
     collection(firestore, USERS_PATH),
-    where('school', '==', school)
+    where("school", "==", school)
   );
 
   const users: User[] = [];
@@ -51,4 +52,8 @@ export const getAllUsers = async (school: string) => {
   });
 
   return users;
+};
+
+export const deleteUser = async (user: string) => {
+  await deleteDoc(doc(firestore, USERS_PATH, user));
 };
