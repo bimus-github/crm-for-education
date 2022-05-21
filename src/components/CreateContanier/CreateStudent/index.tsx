@@ -7,61 +7,171 @@ import { HiOutlineSelector } from "react-icons/hi";
 import AppLayout from "src/components/shared/layout";
 import AppCreateLayout from "src/components/shared/createLayout";
 import toast from "react-hot-toast";
-
-const teachers = [
-  { name: "Wade Cooper" },
-  { name: "Arlene Mccoy" },
-  { name: "Devon Webb" },
-  { name: "Tom Cook" },
-  { name: "Tanya Fox" },
-  { name: "Hellen Schmidt" },
-];
-const groups = [
-  { name: "Wade Cooper" },
-  { name: "Arlene Mccoy" },
-  { name: "Devon Webb" },
-  { name: "Tom Cook" },
-  { name: "Tanya Fox" },
-  { name: "Hellen Schmidt" },
-];
+import { useAppDispatch, useAppSelector } from "src/store/hooks";
+import { groupsSlice } from "src/store/features/groups";
+import { ROLE, User } from "src/models";
+import SelectDropdown from "src/components/shared/select";
+import { MdDelete } from "react-icons/md";
+import { BsPerson } from "react-icons/bs";
+import { Loader } from "src/components/shared/loader";
+import {
+  deleteObject,
+  getDownloadURL,
+  ref,
+  uploadBytesResumable,
+} from "firebase/storage";
+import { storage } from "src/lib/firebase/init";
+import { createUser } from "src/lib/firebase/services/user";
+import { UserActions } from "src/store/features/user";
 
 function CreateStudent() {
-  const [selectedTeacher, setSelectedTeacher] = useState(teachers[0]);
-  const [selectedGroup, setSelectedGroup] = useState(groups[0]);
+  const dispatch = useAppDispatch();
+
+  const groupsSlice = useAppSelector((state) => state.groupsSlice);
+
+  const teachersSlice = useAppSelector((s) => s.usersSlice);
+
+  const teachers = Object.values(teachersSlice)?.filter(
+    (t) => t?.role === ROLE.TEACHER
+  );
+
+  // console.log(teachersSlice);
+
+  const [selectedTeacher, setSelectedTeacher] = useState({
+    name: "Teacher",
+    value: "Teacher",
+  });
+  const [selectedGroup, setSelectedGroup] = useState({
+    name: "Group",
+    value: "Group",
+  });
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [number, setNumber] = useState("");
   const [sale, setSale] = useState("");
   const [about, setAbout] = useState("");
+  const [uploaded, setUploaded] = useState(false);
+  const [img, setImg] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
+  const groups = Object.values(groupsSlice)?.filter(
+    (g) =>
+      g?.teacher.user.toLocaleLowerCase() ===
+      selectedTeacher.name.toLocaleLowerCase()
+  );
+
+  const onUploadImg = (e: any) => {
+    setIsLoading(true);
+
+    const imageFile = e.target.files[0];
+    const imageRef = ref(storage, `Images/${Date.now()}-${imageFile.name}`);
+    const upLoadTask = uploadBytesResumable(imageRef, imageFile);
+
+    upLoadTask.on(
+      "state_changed",
+      (snapshot) => {
+        console.log(snapshot);
+      },
+      (error) => {
+        toast.error("Error to uploading!!!");
+        console.log(error);
+      },
+      () => {
+        getDownloadURL(upLoadTask.snapshot.ref).then((downloadUrl) => {
+          toast.success("Uploading has done successfully");
+          setImg(downloadUrl);
+          setUploaded(true);
+          setIsLoading(false);
+        });
+      }
+    );
+  };
+
+  const onDeletImg = () => {
+    setIsLoading(true);
+
+    const deletRef = ref(storage, img);
+
+    deleteObject(deletRef).then(() => {
+      setImg("");
+      setUploaded(false);
+      setIsLoading(false);
+      toast.custom("Iamge has deleted seccessfully!!!");
+    });
+  };
+
   const onClear = () => {
+    onDeletImg();
+    setSelectedTeacher({
+      name: "Teacher",
+      value: "Teacher",
+    });
+    setSelectedGroup({
+      name: "Group",
+      value: "Group",
+    });
+    setFirstName("");
+    setLastName("");
+    setNumber("");
+    setSale("");
+    setAbout("");
+  };
+
+  const handleSubmit = async (e: any) => {
+    e.preventDeafult();
+
     if (
-      selectedTeacher == teachers[0] ||
-      selectedGroup == groups[0] ||
+      selectedTeacher ==
+        {
+          name: "Teacher",
+          value: "Teacher",
+        } ||
+      selectedGroup ==
+        {
+          name: "Group",
+          value: "Group",
+        } ||
       firstName == "" ||
       lastName == "" ||
       number == "" ||
+      img?.length ||
       sale == "" ||
       about == ""
     ) {
       return toast.error("Required. Please, fill in all the boxes!");
     }
-  };
 
-  const handleSubmit = (e: any) => {
-    e.preventDeafult();
-    const data = {
+    setIsSaving(true);
+
+    const data: User = {
       id: "",
       firstName,
       lastName,
       phone: number,
+      role: ROLE.STUDENT,
       sale: sale,
-      about,
+      about: about,
       teacher: selectedTeacher.name,
       group: selectedGroup.name,
+      school: groups[0].school,
+      email: "",
+      img: img,
+      startedTime: Date.now().toString(),
     };
-    toast.success("Group has successfully been added", data);
+
+    console.log(data);
+
+    // try {
+    //   const userId = await createUser(data);
+    //   dispatch(UserActions.setUser({ ...data, id: userId }));
+    //   toast.success("Teacher has successfully been added");
+    //   onClear();
+    //   setIsSaving(false);
+    // } catch (error) {
+    //   toast.error("There was error to add teacher");
+    //   setIsSaving(false);
+    // }
   };
 
   return (
@@ -71,6 +181,47 @@ function CreateStudent() {
           <div className=" w-full h-[5%] flex items-center justify-center font-bold font-serif text-lg">
             Create Student
           </div>
+          {isLoading ? (
+            <Loader />
+          ) : (
+            <>
+              {!uploaded ? (
+                <label id={"uploadImage"} className="cursor-pointer">
+                  <div className=" w-full h-[100px] flex flex-col items-center my-2">
+                    <div className=" w-[100px] h-[100px] rounded-full shadow-lg p-3  hover:bg-app-background">
+                      <BsPerson className=" w-full h-full hover:text-app-secondary   text-app-secondary-lighter" />
+                    </div>
+                    <p className=" font-serif text-base text-app-secondary-lighter mt-2">
+                      Profile Photo
+                    </p>
+                  </div>
+                  <input
+                    onChange={(e) => onUploadImg(e)}
+                    type="file"
+                    name="uploadImage"
+                    accept="image/*"
+                    className="w-[0px] h-[0px]"
+                  />
+                </label>
+              ) : (
+                <div className="flex flex-col w-full items-center">
+                  <div className=" ">
+                    <img
+                      alt="profile"
+                      src={img}
+                      className="w-[90px] bg-white h-[90px] rounded-full shadow-md"
+                    />
+                  </div>
+                  <div
+                    onClick={onDeletImg}
+                    className=" relative bottom-5 left-32 w-6 h-6 rounded-3xl hover:bg-red-500 bg-app-primary flex justify-center items-center"
+                  >
+                    <MdDelete color="red" size={20} />
+                  </div>
+                </div>
+              )}
+            </>
+          )}
           <form
             onSubmit={handleSubmit}
             className=" h-[95%] w-full flex flex-col justify-around items-center pb-2"
@@ -106,123 +257,29 @@ function CreateStudent() {
             <div className=" my-1 w-[60%] flex-[1] h-full flex items-center justify-between p-2">
               <div>
                 <p className=" relative left-1 top-1 font-semibold">Teacher</p>
-                <Listbox value={selectedTeacher} onChange={setSelectedTeacher}>
-                  <div className="relative mt-2 z-[2]">
-                    <Listbox.Button className="w-[299px] h-[53px] flex justify-between items-center rounded-[5px] border pl-2 shadow-lg outline-none ring-[1px] focus:ring-app-primary focus:ring-offset-2 hover:ring-blue-400">
-                      <span className="block truncate">
-                        {selectedTeacher.name}
-                      </span>
-                      <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                        <HiOutlineSelector
-                          className="h-5 w-5 text-gray-400"
-                          aria-hidden="true"
-                        />
-                      </span>
-                    </Listbox.Button>
-                    <Transition
-                      as={Fragment}
-                      leave="transition ease-in duration-100"
-                      leaveFrom="opacity-100"
-                      leaveTo="opacity-0"
-                    >
-                      <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                        {teachers.map((person, personIdx) => (
-                          <Listbox.Option
-                            key={personIdx}
-                            className={({ active }) =>
-                              `relative cursor-default select-none py-2 pl-10 pr-4 ${
-                                active
-                                  ? "bg-amber-100 text-amber-900"
-                                  : "text-gray-900"
-                              }`
-                            }
-                            value={person}
-                          >
-                            {({ selected }) => (
-                              <>
-                                <span
-                                  className={`block truncate ${
-                                    selected ? "font-medium" : "font-normal"
-                                  }`}
-                                >
-                                  {person.name}
-                                </span>
-                                {selected ? (
-                                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-amber-600">
-                                    <AiOutlineCheck
-                                      className="h-5 w-5"
-                                      aria-hidden="true"
-                                    />
-                                  </span>
-                                ) : null}
-                              </>
-                            )}
-                          </Listbox.Option>
-                        ))}
-                      </Listbox.Options>
-                    </Transition>
-                  </div>
-                </Listbox>
+                <SelectDropdown
+                  value={selectedTeacher}
+                  options={[...teachers].map((t) => {
+                    return {
+                      name: t.firstName,
+                      value: t.lastName,
+                    };
+                  })}
+                  onChange={(v) => setSelectedTeacher(v)}
+                />
               </div>
               <div>
                 <p className=" relative left-1 top-1 font-semibold">Group</p>
-                <Listbox value={selectedGroup} onChange={setSelectedGroup}>
-                  <div className="relative mt-2 z-[2]">
-                    <Listbox.Button className="w-[299px] h-[53px] flex justify-between items-center rounded-[5px] border pl-2 shadow-lg outline-none ring-[1px] focus:ring-app-primary focus:ring-offset-2 hover:ring-blue-400">
-                      <span className="block truncate">
-                        {selectedGroup.name}
-                      </span>
-                      <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                        <HiOutlineSelector
-                          className="h-5 w-5 text-gray-400"
-                          aria-hidden="true"
-                        />
-                      </span>
-                    </Listbox.Button>
-                    <Transition
-                      as={Fragment}
-                      leave="transition ease-in duration-100"
-                      leaveFrom="opacity-100"
-                      leaveTo="opacity-0"
-                    >
-                      <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                        {groups.map((person, personIdx) => (
-                          <Listbox.Option
-                            key={personIdx}
-                            className={({ active }) =>
-                              `relative cursor-default select-none py-2 pl-10 pr-4 ${
-                                active
-                                  ? "bg-amber-100 text-amber-900"
-                                  : "text-gray-900"
-                              }`
-                            }
-                            value={person}
-                          >
-                            {({ selected }) => (
-                              <>
-                                <span
-                                  className={`block truncate ${
-                                    selected ? "font-medium" : "font-normal"
-                                  }`}
-                                >
-                                  {person.name}
-                                </span>
-                                {selected ? (
-                                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-amber-600">
-                                    <AiOutlineCheck
-                                      className="h-5 w-5"
-                                      aria-hidden="true"
-                                    />
-                                  </span>
-                                ) : null}
-                              </>
-                            )}
-                          </Listbox.Option>
-                        ))}
-                      </Listbox.Options>
-                    </Transition>
-                  </div>
-                </Listbox>
+                <SelectDropdown
+                  value={selectedGroup}
+                  options={[...groups].map((g) => {
+                    return {
+                      name: g.name,
+                      value: g.id,
+                    };
+                  })}
+                  onChange={(v) => setSelectedGroup(v)}
+                />
               </div>
             </div>
             <div className=" my-1 w-[60%] flex-[1] h-full flex items-center justify-between p-2">
