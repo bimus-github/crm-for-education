@@ -11,6 +11,7 @@ import { useAppDispatch, useAppSelector } from "src/store/hooks";
 import SelectDropdown from "src/components/shared/select";
 import { createGroup } from "src/lib/firebase/services/group";
 import { GroupActions } from "src/store/features/group";
+import { GroupsSliceActions } from "src/store/features/groups";
 
 function CreateGroup() {
   const dispatch = useAppDispatch();
@@ -75,7 +76,11 @@ function CreateGroup() {
       startTime == "" ||
       endTime == "" ||
       about == "" ||
-      selectedLanguage == { name: "Teacher", value: "Teacher" }
+      selectedLanguage ==
+        {
+          name: "Language",
+          value: "0",
+        }
     ) {
       return toast.error("Required. Please, fill in all the boxes!");
     }
@@ -84,9 +89,8 @@ function CreateGroup() {
       id: "",
       name: gorupName,
       language: selectedLanguage,
-      monthlyBill: price,
       teacher: {
-        user: selectedTeacher.name,
+        user: selectedTeacher.value,
         monthlyBillPercentage: percentage,
       },
       schedule: {
@@ -98,6 +102,8 @@ function CreateGroup() {
       },
       school: schoolSlice.id,
       startedTime: Date.now().toString(),
+      price: Number(price),
+      paid: 0,
     };
 
     console.log(data);
@@ -107,6 +113,7 @@ function CreateGroup() {
     try {
       const groupId = await createGroup(data);
       dispatch(GroupActions.setGroup({ ...data, id: groupId }));
+      dispatch(GroupsSliceActions.addGroup({ ...data, id: groupId }));
       toast.success("Teacher has successfully been added");
       setIsSaving(false);
       onClear();
@@ -127,8 +134,8 @@ function CreateGroup() {
           <div className=" w-full h-auto flex items-center justify-center my-1">
             <p className=" font-bold font-serif text-lg">Create Group</p>
           </div>
-          <div className=" w-[90%] h-full flex flex-col items-center">
-            <div className=" my-1 w-[70%] flex-[1] h-full flex items-center justify-between">
+          <div className=" w-[700px] h-full flex flex-col items-center">
+            <div className=" my-1 w-full flex-[1] h-full flex items-center justify-between">
               <div>
                 <p className=" relative left-1 top-1 font-semibold">
                   Group Name
@@ -137,7 +144,7 @@ function CreateGroup() {
                   onChange={(e) => setGroupName(e.target.value)}
                   title="Group name"
                   value={gorupName}
-                  className="w-[299px] h-[53px] rounded-[5px] border shadow-lg pl-2 outline-none ring-[1px] focus:ring-app-primary focus:ring-offset-2 hover:ring-blue-400"
+                  className="w-[299px] h-[40px] rounded-[5px] border shadow-lg pl-2 outline-none ring-[1px] focus:ring-app-primary focus:ring-offset-2 hover:ring-blue-400"
                   type="text"
                   placeholder="Name"
                 />
@@ -148,13 +155,13 @@ function CreateGroup() {
                   onChange={(e) => setPrice(e.target.value)}
                   title="Price"
                   value={price}
-                  className="w-[299px] h-[53px] rounded-[5px] border pl-2 shadow-lg outline-none ring-[1px] focus:ring-app-primary focus:ring-offset-2 hover:ring-blue-400"
+                  className="w-[299px] h-[40px] rounded-[5px] border pl-2 shadow-lg outline-none ring-[1px] focus:ring-app-primary focus:ring-offset-2 hover:ring-blue-400"
                   type="number"
                   placeholder="500 000 so'm"
                 />
               </div>
             </div>
-            <div className=" my-1 w-[70%] flex-[1] h-full flex items-center justify-between">
+            <div className=" my-1 w-full flex-[1] h-full flex items-center justify-between">
               <div>
                 <p className=" relative left-1 top-1 font-semibold">Teacher</p>
                 <SelectDropdown
@@ -177,7 +184,7 @@ function CreateGroup() {
                     onChange={(e) => setStartTime(e.target.value)}
                     value={startTime}
                     title="Start Time"
-                    className="w-[146px] h-[53px] rounded-[5px] border shadow-lg pl-2 outline-none ring-[1px] focus:ring-app-primary focus:ring-offset-2 hover:ring-blue-400"
+                    className="w-[146px] h-[40px] rounded-[5px] border shadow-lg pl-2 outline-none ring-[1px] focus:ring-app-primary focus:ring-offset-2 hover:ring-blue-400"
                     type="time"
                     placeholder="12:00"
                   />
@@ -189,14 +196,14 @@ function CreateGroup() {
                   <input
                     onChange={(e) => setEndTime(e.target.value)}
                     value={endTime}
-                    className="w-[146px] h-[53px] rounded-[5px] border shadow-lg pl-2 outline-none ring-[1px] focus:ring-app-primary focus:ring-offset-2 hover:ring-blue-400"
+                    className="w-[146px] h-[40px] rounded-[5px] border shadow-lg pl-2 outline-none ring-[1px] focus:ring-app-primary focus:ring-offset-2 hover:ring-blue-400"
                     type="time"
                     placeholder="15:00"
                   />
                 </div>
               </div>
             </div>
-            <div className=" my-1 w-[70%] flex-[1] h-full flex items-center justify-between">
+            <div className=" my-1 w-full flex-[1] h-full flex items-center justify-between">
               <div>
                 <p className=" relative left-1 top-1 font-semibold">
                   Percentage
@@ -205,7 +212,7 @@ function CreateGroup() {
                   title="Percentage"
                   onChange={(e) => setPercentage(e.target.value)}
                   value={percentage}
-                  className="w-[299px] h-[53px] rounded-[5px] border pl-2 shadow-lg outline-none ring-[1px] focus:ring-app-primary focus:ring-offset-2 hover:ring-blue-400"
+                  className="w-[299px] h-[40px] rounded-[5px] border pl-2 shadow-lg outline-none ring-[1px] focus:ring-app-primary focus:ring-offset-2 hover:ring-blue-400"
                   type="text"
                   placeholder="10%"
                 />
@@ -228,7 +235,7 @@ function CreateGroup() {
                 />
               </div>
             </div>
-            <div className=" my-1 w-[70%] flex-[1] h-full flex items-center justify-between">
+            <div className=" my-1 w-full flex-[1] h-full flex items-center justify-between">
               <div className=" w-full">
                 <p className="  relative left-1 top-1 font-semibold">About</p>
                 <textarea
@@ -236,12 +243,12 @@ function CreateGroup() {
                   value={about}
                   required
                   title="About"
-                  className="w-full h-[100px] rounded-[5px] border pl-2 outline-none shadow-lg ring-[1px] focus:ring-app-primary focus:ring-offset-2 hover:ring-blue-400"
+                  className="w-full h-[60px] rounded-[5px] border pl-2 outline-none shadow-lg ring-[1px] focus:ring-app-primary focus:ring-offset-2 hover:ring-blue-400"
                   placeholder="About ..."
                 />
               </div>
             </div>
-            <div className=" my-1 w-[70%] flex-[1] h-full  flex justify-between">
+            <div className=" my-1 w-full flex-[1] h-full  flex justify-between">
               <div
                 className=" flex items-center gap-1 justify-start font-serif text-app-secondary-lighter"
                 onClick={() => {
@@ -394,14 +401,14 @@ function CreateGroup() {
                 onClick={onClear}
                 disabled={isSaving}
                 type="button"
-                className=" w-[200px] h-[45px] border rounded-[5px] bg-app-secondary-lighter shadow-lg text-white font-bold "
+                className=" w-[200px] h-[40px] border rounded-[5px] bg-app-secondary-lighter shadow-lg text-white font-bold "
               >
                 Cancel
               </button>
               <button
                 disabled={isSaving}
                 type="submit"
-                className=" w-[200px] h-[45px] border rounded-[5px] pl-2 bg-red-500 shadow-lg text-white font-bold "
+                className=" w-[200px] h-[40px] border rounded-[5px] pl-2 bg-red-500 shadow-lg text-white font-bold "
               >
                 Save
               </button>

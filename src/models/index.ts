@@ -19,6 +19,7 @@ export type User = {
   teacher?: string;
   group?: string;
   startedTime: string;
+  paid?: number;
 };
 
 export type School = {
@@ -48,20 +49,12 @@ export type Subjects =
   | "Hitory"
   | "IQ";
 
-export type Day =
-  | "Monday"
-  | "Tuesday"
-  | "Wednesday"
-  | "Thursday"
-  | "Friday"
-  | "Saturday"
-  | "Sunday";
-
 export type Group = {
   id: string;
   name: string;
   language: {};
-  monthlyBill: {};
+  price: number;
+  paid: number;
   startedTime: string;
   school: string;
   teacher: {
@@ -69,7 +62,7 @@ export type Group = {
     monthlyBillPercentage: string;
   };
   schedule: {
-    days: {};
+    days: Days[];
     time: {
       start: string;
       end: string;

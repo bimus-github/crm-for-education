@@ -12,6 +12,7 @@ const initialState: User = {
   img: "",
   school: "",
   startedTime: "",
+  paid: 0,
 };
 
 export const userSlice = createSlice({

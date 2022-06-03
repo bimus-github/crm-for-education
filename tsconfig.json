@@ -25,5 +25,10 @@
       "@/pages/*": ["./pages/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"]
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "src/components/shared/change/teacher"
+  ]
 }

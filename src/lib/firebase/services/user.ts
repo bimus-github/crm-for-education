@@ -57,3 +57,8 @@ export const getAllUsers = async (school: string) => {
 export const deleteUser = async (user: string) => {
   await deleteDoc(doc(firestore, USERS_PATH, user));
 };
+
+export const updateUser = async (user: User) => {
+  await setDoc(doc(firestore, USERS_PATH, user.id), user);
+  return user.id;
+};

@@ -1,5 +1,5 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { User } from 'src/models';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { User } from "src/models";
 
 interface InitialStateType {
   [key: string]: User;
@@ -8,7 +8,7 @@ interface InitialStateType {
 const initialState: InitialStateType = {};
 
 export const usersSlice = createSlice({
-  name: 'users',
+  name: "users",
   initialState,
   reducers: {
     addMultipleUsers: (state, action: PayloadAction<User[]>) => {

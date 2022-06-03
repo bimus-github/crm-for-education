@@ -1,5 +1,5 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Group } from 'src/models';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { Group } from "src/models";
 
 interface InitialStateType {
   [key: string]: Group;
@@ -8,7 +8,7 @@ interface InitialStateType {
 const initialState: InitialStateType = {};
 
 export const groupsSlice = createSlice({
-  name: 'groups',
+  name: "groups",
   initialState,
   reducers: {
     addMultipleGroups: (state, action: PayloadAction<Group[]>) => {
@@ -22,6 +22,11 @@ export const groupsSlice = createSlice({
       const group = action.payload;
 
       state[group.id] = group;
+    },
+    deleteGroup: (state, action: PayloadAction<Group>) => {
+      const group = action.payload;
+
+      delete state[group.id];
     },
   },
 });

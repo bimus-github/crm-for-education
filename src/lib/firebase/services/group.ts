@@ -36,6 +36,11 @@ export const getAllGroups = async (school: string) => {
   return groups;
 };
 
-export const deleteGroup = async (group: string) => {
-  deleteDoc(doc(firestore, GROUP_PATH, group));
+export const deleteGroup = async (groupId: string) => {
+  deleteDoc(doc(firestore, GROUP_PATH, groupId));
+};
+
+export const updateGroup = async (group: Group) => {
+  await setDoc(doc(firestore, GROUP_PATH, group.id), group);
+  return group.id;
 };

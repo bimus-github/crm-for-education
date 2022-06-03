@@ -20,8 +20,9 @@ import { Language, ROLE, User } from "src/models";
 import { CheckboxIcon, UncheckedBoxIcon } from "src/components/shared/icons";
 import { createUser } from "src/lib/firebase/services/user";
 import { useAppDispatch, useAppSelector } from "src/store/hooks";
-import { TeachersSliceActions } from "src/store/features/teachers";
 import { UserActions } from "src/store/features/user";
+import NumberFormat from "react-number-format";
+import { UserSliceActions } from "src/store/features/users";
 
 function CreateTeacher() {
   const dispatch = useAppDispatch();
@@ -117,7 +118,6 @@ function CreateTeacher() {
     const data: User = {
       id: "",
       role: ROLE.TEACHER,
-
       firstName: firstName,
       lastName: lastName,
       phone: number,
@@ -135,6 +135,7 @@ function CreateTeacher() {
 
     try {
       const userId = await createUser(data);
+      dispatch(UserSliceActions.addUser({ ...data, id: userId }));
       dispatch(UserActions.setUser({ ...data, id: userId }));
       toast.success("Teacher has successfully been added");
       setAbout("");
@@ -165,47 +166,50 @@ function CreateTeacher() {
             <p className=" font-bold font-serif text-lg">Create Teacher</p>
           </div>
 
-          {isLoading ? (
-            <Loader />
-          ) : (
-            <>
-              {!uploaded ? (
-                <label id={"uploadImage"} className="cursor-pointer">
-                  <div className=" w-full h-[100px] flex flex-col items-center my-2">
-                    <div className=" w-[100px] h-[100px] rounded-full shadow-lg p-3  hover:bg-app-background">
-                      <BsPerson className=" w-full h-full hover:text-app-secondary   text-app-secondary-lighter" />
-                    </div>
-                    <p className=" font-serif text-base text-app-secondary-lighter mt-2">
-                      Profile Photo
-                    </p>
-                  </div>
-                  <input
-                    onChange={(e) => onUploadImg(e)}
-                    type="file"
-                    name="uploadImage"
-                    accept="image/*"
-                    className="w-[0px] h-[0px]"
-                  />
-                </label>
-              ) : (
-                <div className="flex flex-col w-full items-center">
-                  <div className=" ">
-                    <img
-                      alt="profile"
-                      src={img}
-                      className="w-[90px] bg-white h-[90px] rounded-full shadow-md"
-                    />
-                  </div>
-                  <div
-                    onClick={onDeletImg}
-                    className=" relative bottom-5 left-32 w-6 h-6 rounded-3xl hover:bg-red-500 bg-app-primary flex justify-center items-center"
-                  >
-                    <MdDelete color="red" size={20} />
-                  </div>
+          <>
+            {!uploaded ? (
+              <label id={"uploadImage"} className="cursor-pointer">
+                <div className=" w-full h-[100px] flex flex-col items-center my-2">
+                  {isLoading ? (
+                    <Loader />
+                  ) : (
+                    <>
+                      <div className=" w-[100px] h-[100px] rounded-full shadow-lg p-3  hover:bg-app-background">
+                        <BsPerson className=" w-full h-full hover:text-app-secondary   text-app-secondary-lighter" />
+                      </div>
+                      <p className=" font-serif text-base text-app-secondary-lighter mt-2">
+                        Profile Photo
+                      </p>
+                    </>
+                  )}
                 </div>
-              )}
-            </>
-          )}
+                <input
+                  onChange={(e) => onUploadImg(e)}
+                  type="file"
+                  name="uploadImage"
+                  accept="image/*"
+                  className="w-[0px] h-[0px]"
+                />
+              </label>
+            ) : (
+              <div className="flex flex-col w-full items-center">
+                <div className=" ">
+                  <img
+                    alt="profile"
+                    src={img}
+                    className="w-[90px] bg-white h-[90px] rounded-full shadow-md"
+                  />
+                </div>
+                <div
+                  onClick={onDeletImg}
+                  className=" relative bottom-5 left-32 w-6 h-6 rounded-3xl hover:bg-red-500 bg-app-primary flex justify-center items-center"
+                >
+                  <MdDelete color="red" size={20} />
+                </div>
+              </div>
+            )}
+          </>
+
           <div className=" w-[655px] h-full flex flex-col items-center">
             <div className=" my-1 w-full flex-[1] h-full flex items-center justify-between">
               <div>
@@ -216,7 +220,7 @@ function CreateTeacher() {
                   onChange={(e) => setFirstName(e.target.value)}
                   title="First Name"
                   value={firstName}
-                  className="w-[299px] h-[53px] rounded-[5px] border shadow-lg pl-2 outline-none ring-[1px] focus:ring-app-primary focus:ring-offset-2 hover:ring-blue-400"
+                  className="w-[299px] h-[40px] rounded-[5px] border shadow-lg pl-2 outline-none ring-[1px] focus:ring-app-primary focus:ring-offset-2 hover:ring-blue-400"
                   type="text"
                   placeholder="First Name"
                 />
@@ -229,7 +233,7 @@ function CreateTeacher() {
                   onChange={(e) => setLastName(e.target.value)}
                   title="Last Name"
                   value={lastName}
-                  className="w-[299px] h-[53px] rounded-[5px] border pl-2 shadow-lg outline-none ring-[1px] focus:ring-app-primary focus:ring-offset-2 hover:ring-blue-400"
+                  className="w-[299px] h-[40px] rounded-[5px] border pl-2 shadow-lg outline-none ring-[1px] focus:ring-app-primary focus:ring-offset-2 hover:ring-blue-400"
                   type="text"
                   placeholder="Last Name"
                 />
@@ -240,13 +244,17 @@ function CreateTeacher() {
                 <p className=" relative left-1 top-1 font-semibold">
                   Phone number
                 </p>
-                <input
-                  onChange={(e) => setNumber(e.target.value)}
-                  value={number}
-                  title="Phone"
-                  className="w-[299px] h-[53px] rounded-[5px] border pl-2 shadow-lg outline-none ring-[1px] focus:ring-app-primary focus:ring-offset-2 hover:ring-blue-400"
-                  type="text"
+                <NumberFormat
                   placeholder="Phone"
+                  value={number}
+                  onValueChange={(values) => {
+                    const { formattedValue, value } = values;
+
+                    setNumber(value);
+                  }}
+                  format="+998 (##) ###-##-##"
+                  mask="_"
+                  className="w-[299px] h-[40px] rounded-[5px] border shadow-lg pl-2 outline-none ring-[1px] focus:ring-app-primary focus:ring-offset-2 hover:ring-blue-400"
                 />
               </div>
               <div>
@@ -255,7 +263,7 @@ function CreateTeacher() {
                   onChange={(e) => setEmail(e.target.value)}
                   title="Email"
                   value={email}
-                  className="w-[299px] h-[53px] rounded-[5px] border pl-2 shadow-lg outline-none ring-[1px] focus:ring-app-primary focus:ring-offset-2 hover:ring-blue-400"
+                  className="w-[299px] h-[40px] rounded-[5px] border pl-2 shadow-lg outline-none ring-[1px] focus:ring-app-primary focus:ring-offset-2 hover:ring-blue-400"
                   type="email"
                   placeholder="Email"
                 />
@@ -343,14 +351,14 @@ function CreateTeacher() {
                 onClick={onClear}
                 disabled={isSaving}
                 type="button"
-                className=" w-[200px] h-[45px] border rounded-[5px] bg-app-secondary-lighter shadow-lg text-white font-bold "
+                className=" w-[200px] h-[40px] border rounded-[5px] bg-app-secondary-lighter shadow-lg text-white font-bold "
               >
                 Cancel
               </button>
               <button
                 disabled={isSaving}
                 type="submit"
-                className=" w-[200px] h-[45px] border rounded-[5px] pl-2 bg-red-500 shadow-lg text-white font-bold "
+                className=" w-[200px] h-[40px] border rounded-[5px] pl-2 bg-red-500 shadow-lg text-white font-bold "
               >
                 Save
               </button>

@@ -19,8 +19,8 @@ const SelectDropdown = ({ value, options, onChange }: Props) => {
         onChange(v);
       }}
     >
-      <div className="relative mt-2 z-[2]">
-        <Listbox.Button className="w-[299px] h-[53px] flex justify-between items-center rounded-[5px] border pl-2 shadow-lg outline-none ring-[1px] focus:ring-app-primary focus:ring-offset-2 hover:ring-blue-400">
+      <div className="relative  z-[2]">
+        <Listbox.Button className="w-[299px] h-[40px] flex justify-between items-center rounded-[5px] border pl-2 shadow-lg outline-none ring-[1px] focus:ring-app-primary focus:ring-offset-2 hover:ring-blue-400">
           <span className="block truncate">{value.name}</span>
           <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
             <HiOutlineSelector

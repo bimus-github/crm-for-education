@@ -21,6 +21,7 @@ import { SchoolSliceActions } from "./store/features/school";
 import { User } from "firebase/auth";
 import { getAllGroups } from "./lib/firebase/services/group";
 import { GroupsSliceActions } from "./store/features/groups";
+import CashRegister from "./pages/cashRegister";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -31,34 +32,37 @@ function App() {
   useEffect(() => {
     setLoading(true);
 
-    const unlisten = auth.onAuthStateChanged(async (authUser) => {
-      if (authUser && authUser?.email) {
-        setLoading(false);
+    try {
+      const unlisten = auth.onAuthStateChanged(async (authUser) => {
+        if (authUser && authUser?.email) {
+          setLoading(false);
 
-        const userDoc = await getCurrentUser(authUser.email as string);
-        const school = await getSchool(authUser.email);
-        const users = await getAllUsers(school.id);
-        const groups = await getAllGroups(school.id);
+          const userDoc = await getCurrentUser(authUser.email as string);
+          const school = await getSchool(authUser.email);
+          const users = await getAllUsers(school.id);
+          const groups = await getAllGroups(school.id);
 
-        // console.log(groups);
+          // console.log(groups);
 
-        if (userDoc) {
-          dispatch(UserActions.setUser(userDoc));
+          if (userDoc) {
+            dispatch(UserActions.setUser(userDoc));
+          }
+
+          dispatch(UserSliceActions.addMultipleUsers(users));
+          dispatch(SchoolSliceActions.setSchool(school));
+          dispatch(GroupsSliceActions.addMultipleGroups(groups));
+
+          setUser(null);
+          return setUser(authUser);
         }
 
-        dispatch(UserSliceActions.addMultipleUsers(users));
-        dispatch(SchoolSliceActions.setSchool(school));
-        dispatch(GroupsSliceActions.addMultipleGroups(groups));
-
-        setUser(null);
-        return setUser(authUser);
-      }
-
-      // authUser ? setAuthUser(authUser) : setAuthUser(null);
-    });
-
-    return () => unlisten();
-    setLoading(false);
+        // authUser ? setAuthUser(authUser) : setAuthUser(null);
+        setLoading(false);
+        return () => unlisten();
+      });
+    } catch (error) {
+      console.log(error);
+    }
   }, []);
 
   if (loading) {
@@ -73,6 +77,7 @@ function App() {
           <Route path="/teachers" element={<TeachersPage />} />
           <Route path="/students" element={<StudentsPage />} />
           <Route path="/groups" element={<GroupsPage />} />
+          <Route path="/cashRegister" element={<CashRegister />} />
           <Route path="/create/teacher" element={<CreateTeacher />} />
           <Route path="/create/student" element={<CreateStudent />} />
           <Route path="/create/group" element={<CreateGroup />} />
