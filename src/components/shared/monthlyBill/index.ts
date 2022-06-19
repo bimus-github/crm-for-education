@@ -6,7 +6,7 @@ export const monthlyBill = (s: User, groups: any[] | undefined) => {
   const discount = Number(s?.sale);
 
   const price =
-    Math.floor(groups?.filter((g) => g.id === s.group)[0]?.price) *
+    Math.floor(groups?.filter((g) => g?.id === s?.group)[0]?.price) *
     (1 - Number(s?.sale) / 100);
 
   const debt = Math.floor(paid - price);
@@ -18,6 +18,7 @@ export const AllMonthlyBill = (students: any[], groups: any[]) => {
   let allPaids = 0;
   let allPrices = 0;
   let allDebts = 0;
+  let salary = 0;
 
   for (let i = 0; i < students?.length; i++) {
     allPaids += Number(students[i]?.paid);
@@ -30,8 +31,21 @@ export const AllMonthlyBill = (students: any[], groups: any[]) => {
       ) *
       (1 - Number(students[i]?.sale) / 100);
   }
+  for (let i = 0; i < students?.length; i++) {
+    salary +=
+      ((Math.floor(
+        groups?.filter((g) => g?.id === students[i]?.group)[0]?.price
+      ) *
+        Math.floor(
+          groups?.filter((g) => g?.id === students[i]?.group)[0]?.teacher
+            ?.monthlyBillPercentage
+        )) /
+        100) *
+      (1 - Number(students[i]?.sale) / 100);
+    console.log(groups?.filter((g) => g?.id === students[i]?.group)[0]);
+  }
 
   allDebts = allPaids - allPrices;
 
-  return { allPaids, allPrices, allDebts };
+  return { allPaids, allPrices, allDebts, salary };
 };

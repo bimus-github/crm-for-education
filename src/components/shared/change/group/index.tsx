@@ -47,6 +47,7 @@ const ChanegGroup = ({ isOpen, setIsOpen, item }: Props) => {
   const [startTime, setStartTime] = useState(item?.startedTime);
   const [endTime, setEndTime] = useState(item?.endTime);
   const [about, setAbout] = useState(item?.about);
+  const [room, setRoom] = useState(item?.room);
   const [open, setOpen] = useState<boolean>(false);
 
   const languages = Object.values(usersSlice).filter(
@@ -69,17 +70,15 @@ const ChanegGroup = ({ isOpen, setIsOpen, item }: Props) => {
     setStartTime(item?.startedTime);
     setEndTime(item?.endTime);
     setAbout(item?.about);
+    setRoom(item?.room);
   };
 
   const onHandleSubmit = async (e: any) => {
-    e.preventDefault();
-
     const data: Group = {
       id: item?.id,
       name: gorupName,
       language: selectedLanguage,
       price: price,
-      paid: 0,
       startedTime: item?.startedTime,
       school: item?.school,
       teacher: {
@@ -87,12 +86,13 @@ const ChanegGroup = ({ isOpen, setIsOpen, item }: Props) => {
         monthlyBillPercentage: percentage,
       },
       schedule: {
-        days: days,
+        days: days ? days : item?.days,
         time: {
           start: startTime,
           end: endTime,
         },
       },
+      room: room,
     };
 
     setIsSaving(true);
@@ -102,12 +102,12 @@ const ChanegGroup = ({ isOpen, setIsOpen, item }: Props) => {
       dispatch(GroupsSliceActions.deleteGroup(item));
       dispatch(GroupActions.setGroup({ ...data, id: groupId }));
       dispatch(GroupsSliceActions.addGroup({ ...data, id: groupId }));
-      toast.success("Teacher has successfully been added");
+      toast.success("Group has successfully been added");
       setIsSaving(false);
       setIsOpen(false);
     } catch (error) {
       console.log(error);
-      toast.error("There was error to add teacher");
+      toast.error("There was error to add Group");
       setIsSaving(false);
     }
   };
@@ -152,10 +152,7 @@ const ChanegGroup = ({ isOpen, setIsOpen, item }: Props) => {
                   >
                     Change group - {item?.name}
                   </Dialog.Title>
-                  <form
-                    onSubmit={onHandleSubmit}
-                    className="h-[450px] w-[700px] py-2 flex flex-col items-center  gap-2"
-                  >
+                  <div className="h-[450px] w-[700px] py-2 flex flex-col items-center  gap-2">
                     <div className=" w-full flex-1 flex justify-between items-center">
                       <div>
                         <p className=" text-sm relative text-left left-1 top-1 font-mono">
@@ -262,17 +259,28 @@ const ChanegGroup = ({ isOpen, setIsOpen, item }: Props) => {
                         />
                       </div>
                     </div>
-                    <div className=" w-full flex-1 flex justify-between items-center">
-                      <div className=" w-full">
-                        <p className="  relative text-left left-1 top-1 text-sm font-mono">
+                    <div className="w-full flex-[1] h-full flex items-start justify-between">
+                      <div className="">
+                        <p className=" text-left  relative left-1 top-1">
                           About
                         </p>
                         <textarea
                           onChange={(e) => setAbout(e.target.value)}
                           value={about}
                           title="About"
-                          className="w-full h-[60px] rounded-[5px] border pl-2 outline-none shadow-lg ring-[1px] focus:ring-app-primary focus:ring-offset-2 hover:ring-blue-400"
+                          className="w-[480px] h-[60px] rounded-[5px] border pl-2 outline-none shadow-lg ring-[1px] focus:ring-app-primary focus:ring-offset-2 hover:ring-blue-400"
                           placeholder="About ..."
+                        />
+                      </div>
+                      <div className="">
+                        <p className=" relative left-1 top-1 text-left">Room</p>
+                        <input
+                          onChange={(e) => setRoom(e.target.value)}
+                          value={room}
+                          title="Start Time"
+                          className="w-[146px] h-[40px] rounded-[5px] border shadow-lg pl-2 outline-none ring-[1px] focus:ring-app-primary focus:ring-offset-2 hover:ring-blue-400"
+                          type="text"
+                          placeholder="A1"
                         />
                       </div>
                     </div>
@@ -453,14 +461,14 @@ const ChanegGroup = ({ isOpen, setIsOpen, item }: Props) => {
                         Clear
                       </button>
                       <button
-                        type="submit"
+                        onSubmit={onHandleSubmit}
                         disabled={isSaving}
                         className="text-sm bg-app-primary hover:bg-yellow-600 font-mono w-[180px] rounded-md  h-[35px]"
                       >
                         Save
                       </button>
                     </div>
-                  </form>
+                  </div>
                 </Dialog.Panel>
               </Transition.Child>
             </div>

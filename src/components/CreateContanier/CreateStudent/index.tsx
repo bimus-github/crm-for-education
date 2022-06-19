@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 
 import { useAppDispatch, useAppSelector } from "src/store/hooks";
 
-import { ROLE, User } from "src/models";
+import { CASE, ROLE, User } from "src/models";
 
 import AppLayout from "src/components/shared/layout";
 import SelectDropdown from "src/components/shared/select";
@@ -160,6 +160,8 @@ function CreateStudent() {
       img: img,
       startedTime: Date.now().toString(),
       paid: 0,
+      case: CASE.existent,
+      deletedTime: "",
     };
 
     console.log(data);
@@ -315,7 +317,7 @@ function CreateStudent() {
 
                     setNumber(value);
                   }}
-                  format="+998 (##) ###-##-##"
+                  format="+998 (##) ###-##-##, 998 (##) ### ## ##"
                   mask="_"
                   className="w-[299px] h-[40px] rounded-[5px] border shadow-lg pl-2 outline-none ring-[1px] focus:ring-app-primary focus:ring-offset-2 hover:ring-blue-400"
                 />

@@ -40,6 +40,7 @@ function CreateGroup() {
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [about, setAbout] = useState("");
+  const [room, setRoom] = useState("");
 
   const languages = Object.values(usersSlice).filter(
     (u) =>
@@ -57,6 +58,7 @@ function CreateGroup() {
     setStartTime("");
     setEndTime("");
     setAbout("");
+    setRoom("");
     setSelectedTeacher({ name: "Teacher", value: "Teacher" });
     setSelectedLanguage({
       name: "Language",
@@ -76,6 +78,7 @@ function CreateGroup() {
       startTime == "" ||
       endTime == "" ||
       about == "" ||
+      room == "" ||
       selectedLanguage ==
         {
           name: "Language",
@@ -103,7 +106,7 @@ function CreateGroup() {
       school: schoolSlice.id,
       startedTime: Date.now().toString(),
       price: Number(price),
-      paid: 0,
+      room: room,
     };
 
     console.log(data);
@@ -235,16 +238,27 @@ function CreateGroup() {
                 />
               </div>
             </div>
-            <div className=" my-1 w-full flex-[1] h-full flex items-center justify-between">
-              <div className=" w-full">
+            <div className="w-full flex-[1] h-full flex items-start justify-between">
+              <div className="">
                 <p className="  relative left-1 top-1 font-semibold">About</p>
                 <textarea
                   onChange={(e) => setAbout(e.target.value)}
                   value={about}
                   required
                   title="About"
-                  className="w-full h-[60px] rounded-[5px] border pl-2 outline-none shadow-lg ring-[1px] focus:ring-app-primary focus:ring-offset-2 hover:ring-blue-400"
+                  className="w-[480px] h-[60px] rounded-[5px] border pl-2 outline-none shadow-lg ring-[1px] focus:ring-app-primary focus:ring-offset-2 hover:ring-blue-400"
                   placeholder="About ..."
+                />
+              </div>
+              <div className="">
+                <p className=" relative left-1 top-1 font-semibold">Room</p>
+                <input
+                  onChange={(e) => setRoom(e.target.value)}
+                  value={room}
+                  title="Start Time"
+                  className="w-[146px] h-[40px] rounded-[5px] border shadow-lg pl-2 outline-none ring-[1px] focus:ring-app-primary focus:ring-offset-2 hover:ring-blue-400"
+                  type="text"
+                  placeholder="A1"
                 />
               </div>
             </div>

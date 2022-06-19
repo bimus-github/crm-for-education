@@ -7,7 +7,7 @@ import { useAppDispatch, useAppSelector } from "src/store/hooks";
 import { UserSliceActions } from "src/store/features/users";
 import { GroupsSliceActions } from "src/store/features/groups";
 
-import { Group, ROLE, User } from "src/models";
+import { CASE, Group, ROLE, User } from "src/models";
 import moment from "moment";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
@@ -15,10 +15,11 @@ import { Link } from "react-router-dom";
 import { BsPencilSquare } from "react-icons/bs";
 import { MdDelete } from "react-icons/md";
 
-import { deleteUser } from "src/lib/firebase/services/user";
-import { deleteGroup } from "src/lib/firebase/services/group";
+import { deleteUser, updateUser } from "src/lib/firebase/services/user";
+import { deleteGroup, updateGroup } from "src/lib/firebase/services/group";
 import ChangeTeacher from "src/components/shared/change/teacher";
 import { AllMonthlyBill } from "src/components/shared/monthlyBill";
+import OpenInfoTeacher from "src/components/shared/informations/teacher";
 
 const TeachersPage = () => {
   const dispatch = useAppDispatch();
@@ -29,7 +30,9 @@ const TeachersPage = () => {
 
   const usersSlices = useAppSelector((u) => u.usersSlice);
 
-  let t = Object.values(usersSlices)?.filter((t) => t.role === ROLE.TEACHER);
+  let t = Object.values(usersSlices)?.filter(
+    (t) => t.role === ROLE.TEACHER && t.case === CASE.existent
+  );
 
   let s = Object.values(usersSlices)?.filter((s) => s.role === ROLE.STUDENT);
 
@@ -38,23 +41,38 @@ const TeachersPage = () => {
   );
 
   const [teachers, setTeachers] = useState(t);
-  const [changedStudent, setChangetStudent] = useState<User | []>();
+
+  const [teacher, setTeacher] = useState<User>();
+  const [openTeacherModal, setOpenTeacherModal] = useState<boolean>(false);
+
+  const [changedTeacher, setChangetTeacher] = useState<User | []>();
   const [openChangeModal, setOpenChangeModal] = useState<boolean>(false);
+
   const [msgOpenDelete, setMsgOpenDelete] = useState(false);
   const [msg, setMsg] = useState("");
   const [item, setItem] = useState<User | "">("");
 
+  const onInfoTeacher = (t: User) => {
+    setTeacher(t);
+    setOpenTeacherModal(true);
+  };
+
   const openModal = (s: any) => {
-    setChangetStudent(s);
+    setChangetTeacher(s);
     setOpenChangeModal(true);
   };
 
   useEffect(() => {
-    setIsOpen(openChangeModal);
+    setIsOpenInfoTeacher(openTeacherModal);
+    setIsOpenChange(openChangeModal);
     console.log(openChangeModal);
   }, []);
 
-  const setIsOpen = (i: any) => {
+  const setIsOpenInfoTeacher = (i: any) => {
+    setOpenTeacherModal(i);
+  };
+
+  const setIsOpenChange = (i: any) => {
     setOpenChangeModal(i);
   };
 
@@ -71,20 +89,45 @@ const TeachersPage = () => {
       setMsgOpenDelete(true);
       setMsg(`Do you realy want to delete ${t?.firstName}`);
       setItem(t);
+
       if (item !== "") {
-        deleteUser(t.id);
         if (deletedGroup !== []) {
           for (let i = 0; i < deletedGroup.length; i++) {
-            deleteGroup(deletedGroup[i].id);
-            dispatch(GroupsSliceActions.deleteGroup(deletedGroup[i]));
+            let group: any = {
+              ...deletedGroup[i],
+              case: CASE.nonexistent,
+              deletedTime: Date.now(),
+            };
+
+            updateGroup(group);
+            dispatch(GroupsSliceActions.deleteGroup(group));
+            dispatch(GroupsSliceActions.addGroup(group));
           }
         }
-        if (deletedStudents) {
+
+        if (deletedStudents !== []) {
           for (let i = 0; i < deletedStudents.length; i++) {
-            deleteUser(deletedStudents[i].id);
+            let student: any = {
+              ...deletedStudents[i],
+              case: CASE.nonexistent,
+              deletedTime: Date.now(),
+            };
+
+            updateUser(student);
+            dispatch(UserSliceActions.removeUser(student));
+            dispatch(UserSliceActions.addUser(student));
           }
         }
+
+        let teacher: any = {
+          ...t,
+          case: CASE.nonexistent,
+          deletedTime: Date.now(),
+        };
+
+        updateUser(teacher);
         dispatch(UserSliceActions.removeUser(t));
+        dispatch(UserSliceActions.addUser(teacher));
         setMsgOpenDelete(false);
         setMsg("");
         setItem("");
@@ -110,9 +153,16 @@ const TeachersPage = () => {
       <div className="p-5 w-full flex flex-col gap-2">
         <ChangeTeacher
           isOpen={openChangeModal}
-          setIsOpen={(i: any) => setIsOpen(i)}
-          item={changedStudent}
+          setIsOpen={(i: any) => setIsOpenChange(i)}
+          item={changedTeacher}
         />
+
+        <OpenInfoTeacher
+          isOpen={openTeacherModal}
+          setIsOpen={(i: any) => setIsOpenInfoTeacher(i)}
+          item={teacher}
+        />
+
         <div className=" w-full h-auto flex justify-between items-center mb-3">
           <input
             onChange={(e) => onFilterTeachers(e)}
@@ -132,22 +182,13 @@ const TeachersPage = () => {
               First Name
             </div>
             <div className="mx-1 text-base flex items-center justify-start pl-2 font-bold flex-[2] h-full">
-              Last Name
-            </div>
-            <div className="mx-1 text-base flex items-center justify-start pl-2 font-bold flex-[2] h-full">
-              Languages
-            </div>
-            <div className="mx-1 text-base flex items-center justify-start pl-2 font-bold flex-[2] h-full">
               Number
-            </div>
-            <div className="mx-1 text-base flex items-center justify-start pl-2 font-bold flex-[2] h-full">
-              Num. of groups
             </div>
             <div className="mx-1 text-base flex items-center justify-start pl-2 font-bold flex-[3] h-full">
               Email
             </div>
             <div className="mx-1 text-base flex items-center justify-start pl-2 font-bold flex-[2] h-full">
-              Started date
+              Password
             </div>
             <div className="mx-1 text-base flex items-center justify-start pl-2 font-bold flex-[1] h-full">
               Change
@@ -187,7 +228,10 @@ const TeachersPage = () => {
               key={i}
               className="p-1 w-full h-auto bg-white  rounded-[5px] flex items-center  py-3"
             >
-              <div className=" mx-1 capitalize text-base font-semibold  flex items-center justify-start pl-2 font-mono flex-[2] h-full">
+              <div
+                onDoubleClick={() => onInfoTeacher(t)}
+                className=" mx-1 capitalize text-base font-semibold  flex items-center justify-start pl-2 font-mono flex-[2] h-full"
+              >
                 <div className=" w-[30px] h-[30px] mr-1">
                   <img
                     src={t.img}
@@ -196,38 +240,59 @@ const TeachersPage = () => {
                 </div>
                 {t.firstName}
               </div>
-              <div className=" mx-1 capitalize text-base font-semibold  flex items-center justify-start pl-2 font-mono flex-[2] h-full">
-                {t.lastName}
-              </div>
-              <div className=" mx-1 capitalize text-base font-semibold  flex items-center justify-start pl-2 font-mono flex-[2] h-full">
-                {t.languages?.map((p) => (
-                  <p className="mx-2">{p}</p>
-                ))}
-              </div>
-              <div className="mx-1 text-base font-semibold  flex items-center justify-start pl-0 font-mono flex-[2] h-full">
-                {`(${FormatPhoneNumber(Number(t.phone)).code}) ${
-                  FormatPhoneNumber(Number(t.phone)).oneThree
-                } ${FormatPhoneNumber(Number(t.phone)).fourFive} ${
-                  FormatPhoneNumber(Number(t.phone)).sixSeven
-                }`}
-              </div>
-              <div
-                title={String(
-                  groups
-                    ?.filter((l) => l.teacher.user === t.id)
-                    ?.map((n) => {
-                      return n.name;
-                    })
-                )}
-                className="mx-1 text-base  font-semibold  flex items-center justify-start pl-2 font-mono flex-[2] h-full"
-              >
-                {groups?.filter((l) => l.teacher.user === t.id)?.length}
+              <div className="mx-1 text-base font-semibold  flex flex-col items-start pl-0 font-mono flex-[2] h-full">
+                <p>
+                  {`${
+                    FormatPhoneNumber(Math.floor(Number(t.phone) / 1000000000))
+                      .code
+                  } 
+                 ${
+                   FormatPhoneNumber(Math.floor(Number(t.phone) / 1000000000))
+                     .oneThree
+                 } 
+                 ${
+                   FormatPhoneNumber(Math.floor(Number(t.phone) / 1000000000))
+                     .fourFive
+                 } 
+                 ${
+                   FormatPhoneNumber(Math.floor(Number(t.phone) / 1000000000))
+                     .sixSeven
+                 } 
+                 `}
+                </p>
+                <p>
+                  {`${
+                    FormatPhoneNumber(
+                      Number(t.phone) -
+                        Math.floor(Number(t.phone) / 1000000000) * 1000000000
+                    ).code
+                  } 
+                 ${
+                   FormatPhoneNumber(
+                     Number(t.phone) -
+                       Math.floor(Number(t.phone) / 1000000000) * 1000000000
+                   ).oneThree
+                 } 
+                 ${
+                   FormatPhoneNumber(
+                     Number(t.phone) -
+                       Math.floor(Number(t.phone) / 1000000000) * 1000000000
+                   ).fourFive
+                 } 
+                 ${
+                   FormatPhoneNumber(
+                     Number(t.phone) -
+                       Math.floor(Number(t.phone) / 1000000000) * 1000000000
+                   ).sixSeven
+                 } 
+                 `}
+                </p>
               </div>
               <div className="mx-1 text-base font-semibold  flex items-center justify-start pl-2 font-mono flex-[3] h-full">
                 {t.email}
               </div>
-              <div className="mx-1 text-base font-semibold  flex items-center justify-start pl-2 font-mono flex-[2] h-full">
-                {moment(Number(t.startedTime)).format("MMMM Do YYYY")}
+              <div className="mx-1 text-base font-semibold  flex items-center justify-start pl-0 font-mono flex-[2] h-full">
+                {t.password}
               </div>
               <div className="mx-1 text-base font-semibold  flex items-center gap-4 justify-around pl- font-monod flex-[1] h-full">
                 <BsPencilSquare

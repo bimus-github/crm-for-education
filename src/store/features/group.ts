@@ -1,8 +1,6 @@
 import { Group, ROLE } from "src/models";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { Days } from "src/models";
-
 const initialState: Group = {
   id: "",
   name: "",
@@ -21,7 +19,7 @@ const initialState: Group = {
   },
   startedTime: "",
   price: 0,
-  paid: 0,
+  room: "",
 };
 
 export const groupSlice = createSlice({

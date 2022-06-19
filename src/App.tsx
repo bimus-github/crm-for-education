@@ -21,7 +21,13 @@ import { SchoolSliceActions } from "./store/features/school";
 import { User } from "firebase/auth";
 import { getAllGroups } from "./lib/firebase/services/group";
 import { GroupsSliceActions } from "./store/features/groups";
-import CashRegister from "./pages/cashRegister";
+import Calendar from "./pages/calendar";
+import Cash from "./pages/cash";
+import HistoryStudents from "./pages/history/students";
+import Notes from "./pages/notes";
+import Schedule from "./pages/schedule";
+import { NotesSliceActions } from "./store/features/messages";
+import { getAllNotes } from "./lib/firebase/services/message";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -41,16 +47,18 @@ function App() {
           const school = await getSchool(authUser.email);
           const users = await getAllUsers(school.id);
           const groups = await getAllGroups(school.id);
+          const notes = await getAllNotes(school.id);
 
-          // console.log(groups);
+          console.log(notes);
 
           if (userDoc) {
             dispatch(UserActions.setUser(userDoc));
           }
 
-          dispatch(UserSliceActions.addMultipleUsers(users));
           dispatch(SchoolSliceActions.setSchool(school));
+          dispatch(UserSliceActions.addMultipleUsers(users));
           dispatch(GroupsSliceActions.addMultipleGroups(groups));
+          dispatch(NotesSliceActions.addMultipleNotes(notes));
 
           setUser(null);
           return setUser(authUser);
@@ -74,10 +82,14 @@ function App() {
       {user ? (
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/calendar" element={<Calendar />} />
+          <Route path="/cash" element={<Cash />} />
+          <Route path="/historyStudents" element={<HistoryStudents />} />
+          <Route path="/notes" element={<Notes />} />
+          <Route path="/schedule" element={<Schedule />} />
           <Route path="/teachers" element={<TeachersPage />} />
           <Route path="/students" element={<StudentsPage />} />
           <Route path="/groups" element={<GroupsPage />} />
-          <Route path="/cashRegister" element={<CashRegister />} />
           <Route path="/create/teacher" element={<CreateTeacher />} />
           <Route path="/create/student" element={<CreateStudent />} />
           <Route path="/create/group" element={<CreateGroup />} />

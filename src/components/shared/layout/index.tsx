@@ -1,11 +1,14 @@
 import { Link, useLocation } from "react-router-dom";
 
 const routes = [
-  { path: "/", title: "Home" },
+  {
+    path: "/",
+    title: "Home",
+    subPaths: ["/schedule", "/", "/calendar", "/cash", "/history", "/notes"],
+  },
   { path: "/teachers", title: "Teachers" },
   { path: "/groups", title: "Groups" },
   { path: "/students", title: "Students" },
-  { path: "/cashRegister", title: "Cash Register" },
   {
     path: "/create/teacher",
     title: "Create",

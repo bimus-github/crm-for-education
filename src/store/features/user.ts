@@ -1,4 +1,4 @@
-import { ROLE, User } from "src/models";
+import { CASE, ROLE, User } from "src/models";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const initialState: User = {
@@ -13,6 +13,11 @@ const initialState: User = {
   school: "",
   startedTime: "",
   paid: 0,
+  case: CASE.existent,
+  deletedTime: "",
+  group: "",
+  teacher: "",
+  sale: "",
 };
 
 export const userSlice = createSlice({

@@ -39,6 +39,7 @@ function CreateTeacher() {
   const [email, setEmail] = useState("");
   const [about, setAbout] = useState("");
   const [langs, setLangs] = useState<Language[]>([]);
+  const [password, setPassword] = useState("");
 
   const onUploadImg = (e: any) => {
     setIsLoading(true);
@@ -86,6 +87,7 @@ function CreateTeacher() {
     setFirstName("");
     setLastName("");
     setNumber("");
+    setPassword("");
     setLangs([]);
 
     if (img !== "") {
@@ -110,7 +112,7 @@ function CreateTeacher() {
       firstName === "" ||
       lastName === "" ||
       number === "" ||
-      !img.length
+      password === ""
     ) {
       return toast.error("Required. Please, fill in all the boxes!");
     }
@@ -127,6 +129,7 @@ function CreateTeacher() {
       languages: langs,
       school: schoolSlice.id,
       startedTime: Date.now().toString(),
+      password: password,
     };
 
     setIsSaving(true);
@@ -252,7 +255,7 @@ function CreateTeacher() {
 
                     setNumber(value);
                   }}
-                  format="+998 (##) ###-##-##"
+                  format="+998 (##) ###-##-##, 998 (##) ### ## ##"
                   mask="_"
                   className="w-[299px] h-[40px] rounded-[5px] border shadow-lg pl-2 outline-none ring-[1px] focus:ring-app-primary focus:ring-offset-2 hover:ring-blue-400"
                 />
@@ -269,16 +272,27 @@ function CreateTeacher() {
                 />
               </div>
             </div>
-            <div className=" my-1 w-full flex-[1.3] h-full flex items-center justify-center">
-              <div className=" w-full h-full">
+            <div className=" my-1 w-full flex-[1.3] h-full flex items-center justify-between">
+              <div className="w-[299px] h-full">
                 <p className=" relative left-1 top-1 font-semibold">About</p>
                 <textarea
                   onChange={(e) => setAbout(e.target.value)}
                   value={about}
                   required
                   title="About"
-                  className="w-full h- full rounded-[5px] border pl-2 outline-none shadow-lg ring-[1px] focus:ring-app-primary focus:ring-offset-2 hover:ring-blue-400"
+                  className="w-full  rounded-[5px] border pl-2 outline-none shadow-lg ring-[1px] focus:ring-app-primary focus:ring-offset-2 hover:ring-blue-400"
                   placeholder="About ..."
+                />
+              </div>
+              <div className="h-full w-[299px] flex flex-col justify-start">
+                <p className=" relative left-1 top-1 font-semibold">Password</p>
+                <input
+                  onChange={(e) => setPassword(e.target.value)}
+                  title="Password"
+                  value={password}
+                  className="w-[299px] h-[40px] rounded-[5px] border pl-2 shadow-lg outline-none ring-[1px] focus:ring-app-primary focus:ring-offset-2 hover:ring-blue-400"
+                  type="password"
+                  placeholder="Password"
                 />
               </div>
             </div>

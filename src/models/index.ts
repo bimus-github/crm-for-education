@@ -4,6 +4,11 @@ export enum ROLE {
   STUDENT,
 }
 
+export enum CASE {
+  existent,
+  nonexistent,
+}
+
 export type User = {
   id: string;
   school: string;
@@ -19,7 +24,10 @@ export type User = {
   teacher?: string;
   group?: string;
   startedTime: string;
+  password?: string;
   paid?: number;
+  case?: CASE;
+  deletedTime?: string;
 };
 
 export type School = {
@@ -52,10 +60,12 @@ export type Subjects =
 export type Group = {
   id: string;
   name: string;
+  case?: CASE;
   language: {};
   price: number;
-  paid: number;
   startedTime: string;
+  deletedTime?: string;
+  room: string;
   school: string;
   teacher: {
     user: string;
@@ -68,4 +78,12 @@ export type Group = {
       end: string;
     };
   };
+};
+
+export type Message = {
+  id: string;
+  message: string;
+  name: string;
+  school: string;
+  date: number;
 };

@@ -13,7 +13,7 @@ import NumberFormat from "react-number-format";
 import { storage } from "src/lib/firebase/init";
 import { updateUser } from "src/lib/firebase/services/user";
 
-import { ROLE, User } from "src/models";
+import { CASE, ROLE, User } from "src/models";
 import { UserActions } from "src/store/features/user";
 
 import { UserSliceActions } from "src/store/features/users";
@@ -145,6 +145,7 @@ function ChangeStudent({ isOpen, setIsOpen, item }: Props) {
 
     const data: User = {
       id: "",
+      case: CASE.existent,
       firstName,
       lastName,
       phone: number,
@@ -351,7 +352,7 @@ function ChangeStudent({ isOpen, setIsOpen, item }: Props) {
 
                               setNumber(value);
                             }}
-                            format="+998 (##) ###-##-##"
+                            format="+998 (##) ###-##-##, 998 (##) ### ## ##"
                             mask="_"
                             className="w-[299px] h-[40px] rounded-[5px] border shadow-lg pl-2 outline-none ring-[1px] focus:ring-app-primary focus:ring-offset-2 hover:ring-blue-400"
                           />

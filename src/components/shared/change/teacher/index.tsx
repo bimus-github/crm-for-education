@@ -39,6 +39,7 @@ function ChangeTeacher({ isOpen, setIsOpen, item }: Props) {
   const [number, setNumber] = useState(item?.phone);
   const [email, setEmail] = useState(item?.email);
   const [about, setAbout] = useState(item?.about);
+  const [password, setPassword] = useState(item?.password);
   const [langs, setLangs] = useState<Language[]>(item?.languages);
 
   const onUploadImg = (e: any) => {
@@ -88,6 +89,7 @@ function ChangeTeacher({ isOpen, setIsOpen, item }: Props) {
     setLastName("");
     setNumber("");
     setLangs([]);
+    setPassword("");
 
     if (img !== "") {
       setIsLoading(true);
@@ -111,6 +113,7 @@ function ChangeTeacher({ isOpen, setIsOpen, item }: Props) {
       firstName === "" ||
       lastName === "" ||
       number === "" ||
+      password == "" ||
       !img.length
     ) {
       return toast.error("Required. Please, fill in all the boxes!");
@@ -128,6 +131,7 @@ function ChangeTeacher({ isOpen, setIsOpen, item }: Props) {
       languages: langs,
       school: schoolSlice.id,
       startedTime: item?.startedTime,
+      password,
     };
 
     setIsSaving(true);
@@ -286,7 +290,7 @@ function ChangeTeacher({ isOpen, setIsOpen, item }: Props) {
 
                               setNumber(value);
                             }}
-                            format="+998 (##) ###-##-##"
+                            format="+998 (##) ###-##-##, 998 (##) ### ## ##"
                             mask="_"
                             className="w-[299px] h-[40px] rounded-[5px] border shadow-lg pl-2 outline-none ring-[1px] focus:ring-app-primary focus:ring-offset-2 hover:ring-blue-400"
                           />
@@ -305,9 +309,9 @@ function ChangeTeacher({ isOpen, setIsOpen, item }: Props) {
                           />
                         </div>
                       </div>
-                      <div className=" my-1 w-full flex-[1.3] h-full flex items-center justify-center">
-                        <div className=" w-full h-full">
-                          <p className=" relative text-left font-serif left-1 top-1">
+                      <div className=" my-1 w-full flex-[1.3] h-full flex items-center justify-between">
+                        <div className="w-[299px] h-full">
+                          <p className=" relative left-1 top-1 font-semibold">
                             About
                           </p>
                           <textarea
@@ -315,8 +319,21 @@ function ChangeTeacher({ isOpen, setIsOpen, item }: Props) {
                             value={about}
                             required
                             title="About"
-                            className="w-full h- full rounded-[5px] border pl-2 outline-none shadow-lg ring-[1px] focus:ring-app-primary focus:ring-offset-2 hover:ring-blue-400"
+                            className="w-full  rounded-[5px] border pl-2 outline-none shadow-lg ring-[1px] focus:ring-app-primary focus:ring-offset-2 hover:ring-blue-400"
                             placeholder="About ..."
+                          />
+                        </div>
+                        <div className="h-full w-[299px] flex flex-col justify-start">
+                          <p className=" relative left-1 top-1 font-semibold">
+                            Password
+                          </p>
+                          <input
+                            onChange={(e) => setPassword(e.target.value)}
+                            title="Password"
+                            value={password}
+                            className="w-[299px] h-[40px] rounded-[5px] border pl-2 shadow-lg outline-none ring-[1px] focus:ring-app-primary focus:ring-offset-2 hover:ring-blue-400"
+                            type="password"
+                            placeholder="Password"
                           />
                         </div>
                       </div>
