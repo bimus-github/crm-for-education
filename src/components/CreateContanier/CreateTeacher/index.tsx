@@ -16,7 +16,7 @@ import Loader from "src/components/Loader";
 
 import { MdDelete } from "react-icons/md";
 import { BsPerson } from "react-icons/bs";
-import { Language, ROLE, User } from "src/models";
+import { CASE, Language, ROLE, User } from "src/models";
 import { CheckboxIcon, UncheckedBoxIcon } from "src/components/shared/icons";
 import { createUser } from "src/lib/firebase/services/user";
 import { useAppDispatch, useAppSelector } from "src/store/hooks";
@@ -120,6 +120,7 @@ function CreateTeacher() {
     const data: User = {
       id: "",
       role: ROLE.TEACHER,
+      case: CASE.existent,
       firstName: firstName,
       lastName: lastName,
       phone: number,

@@ -24,8 +24,6 @@ export default function OpenInfoGroup({ isOpen, setIsOpen, item }: Props) {
 
   const usersSlices = useAppSelector((u) => u.usersSlice);
 
-  console.log(item?.language);
-
   let groups = Object.values(groupsSlice)?.filter(
     (g) => g.school === schoolSlice.id
   );

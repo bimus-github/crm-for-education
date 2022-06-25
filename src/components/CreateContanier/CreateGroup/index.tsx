@@ -3,7 +3,7 @@ import { useState } from "react";
 import AppLayout from "src/components/shared/layout";
 import AppCreateLayout from "src/components/shared/createLayout";
 
-import { Days, Group, ROLE } from "../../../models/index";
+import { CASE, Days, Group, ROLE } from "../../../models/index";
 
 import { CheckboxIcon, UncheckedBoxIcon } from "src/components/shared/icons";
 import toast from "react-hot-toast";
@@ -21,7 +21,7 @@ function CreateGroup() {
   const schoolSlice = useAppSelector((state) => state.schoolSlice);
 
   const teachers = Object.values(usersSlice).filter(
-    (u) => u.role === ROLE.TEACHER
+    (u) => u.role === ROLE.TEACHER && u.case === CASE.existent
   );
 
   const [isSaving, setIsSaving] = useState(false);
@@ -91,6 +91,7 @@ function CreateGroup() {
     const data: Group = {
       id: "",
       name: gorupName,
+      case: CASE.existent,
       language: selectedLanguage,
       teacher: {
         user: selectedTeacher.value,

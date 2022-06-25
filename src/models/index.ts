@@ -87,3 +87,10 @@ export type Message = {
   school: string;
   date: number;
 };
+
+export type ChartLine = {
+  id: string;
+  date: number;
+  numberOfStudents: string;
+  school: string;
+};

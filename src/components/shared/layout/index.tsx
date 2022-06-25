@@ -1,10 +1,19 @@
 import { Link, useLocation } from "react-router-dom";
+import { auth } from "src/lib/firebase/init";
 
 const routes = [
   {
     path: "/",
     title: "Home",
-    subPaths: ["/schedule", "/", "/calendar", "/cash", "/history", "/notes"],
+    subPaths: [
+      "/schedule",
+      "/",
+      "/calendar",
+      "/cash",
+      "/history",
+      "/notes",
+      "/statistics",
+    ],
   },
   { path: "/teachers", title: "Teachers" },
   { path: "/groups", title: "Groups" },
@@ -23,10 +32,22 @@ interface Props {
 const AppLayout = ({ children }: Props) => {
   const location = useLocation();
 
+  const handleSignOut = () => {
+    auth.signOut();
+  };
+
   return (
     <div className="min-h-screen bg-app-background">
-      <div className="flex absolute justify-between items-center px-16 h-[70px] w-full bg-app-primary shadow-md">
-        <div>Logo</div>
+      <div className="flex absolute justify-between items-center pr-16 pl-8 h-[70px] w-full bg-app-primary shadow-md">
+        <div className=" flex gap-10">
+          <div
+            className="hover:text-red-500 hover:font-serif hover:relative"
+            onClick={handleSignOut}
+          >
+            SingOut
+          </div>
+          <div>Logo</div>
+        </div>
 
         <nav>
           <ul className="flex items-center space-x-10">

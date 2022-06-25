@@ -23,11 +23,14 @@ import { getAllGroups } from "./lib/firebase/services/group";
 import { GroupsSliceActions } from "./store/features/groups";
 import Calendar from "./pages/calendar";
 import Cash from "./pages/cash";
-import HistoryStudents from "./pages/history/students";
+import History from "./pages/history";
 import Notes from "./pages/notes";
 import Schedule from "./pages/schedule";
 import { NotesSliceActions } from "./store/features/messages";
 import { getAllNotes } from "./lib/firebase/services/message";
+import Statistics from "./pages/statistics";
+import { getAllChart } from "./lib/firebase/services/chart";
+import { ChartsSliceActions } from "./store/features/charts";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -48,8 +51,9 @@ function App() {
           const users = await getAllUsers(school.id);
           const groups = await getAllGroups(school.id);
           const notes = await getAllNotes(school.id);
+          const chart = await getAllChart(school.id);
 
-          console.log(notes);
+          console.log(chart);
 
           if (userDoc) {
             dispatch(UserActions.setUser(userDoc));
@@ -59,6 +63,7 @@ function App() {
           dispatch(UserSliceActions.addMultipleUsers(users));
           dispatch(GroupsSliceActions.addMultipleGroups(groups));
           dispatch(NotesSliceActions.addMultipleNotes(notes));
+          dispatch(ChartsSliceActions.addMultipleCharts(chart));
 
           setUser(null);
           return setUser(authUser);
@@ -84,9 +89,10 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/calendar" element={<Calendar />} />
           <Route path="/cash" element={<Cash />} />
-          <Route path="/historyStudents" element={<HistoryStudents />} />
+          <Route path="/history" element={<History />} />
           <Route path="/notes" element={<Notes />} />
           <Route path="/schedule" element={<Schedule />} />
+          <Route path="/statistics" element={<Statistics />} />
           <Route path="/teachers" element={<TeachersPage />} />
           <Route path="/students" element={<StudentsPage />} />
           <Route path="/groups" element={<GroupsPage />} />

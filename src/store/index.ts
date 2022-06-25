@@ -7,6 +7,8 @@ import groupSlice from "./features/group";
 import groupsSlice from "./features/groups";
 import noteSlice from "./features/message";
 import notesSlice from "./features/messages";
+import chartSlice from "./features/chart";
+import chartsSlice from "./features/charts";
 
 export const store = configureStore({
   reducer: {
@@ -18,6 +20,8 @@ export const store = configureStore({
     groupsSlice,
     noteSlice,
     notesSlice,
+    chartSlice,
+    chartsSlice,
   },
 });
 

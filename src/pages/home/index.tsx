@@ -5,6 +5,7 @@ import { MdHistory, MdNoteAlt } from "react-icons/md";
 import { SiBitcoincash } from "react-icons/si";
 import { Link } from "react-router-dom";
 import { BsCalendar2Day } from "react-icons/bs";
+import { FcStatistics } from "react-icons/fc";
 
 const Home = () => {
   const handleSignOut = () => {
@@ -28,16 +29,26 @@ const Home = () => {
                 <p className=" text-[24px] font-semibold font-mono">Notes</p>
               </div>
             </Link>
-            <div className="hover:bg-green-200 w-[346px] h-[206px] border rounded-[5px] shadow-md flex flex-col items-center justify-center gap-2">
-              <SiBitcoincash className=" w-[100px] h-[100px] text-green-500" />
-              <p className=" text-[24px] font-semibold font-mono">Cash</p>
-            </div>
+            <Link to={"/cash"}>
+              <div className="hover:bg-green-200 w-[346px] h-[206px] border rounded-[5px] shadow-md flex flex-col items-center justify-center gap-2">
+                <SiBitcoincash className=" w-[100px] h-[100px] text-green-500" />
+                <p className=" text-[24px] font-semibold font-mono">Cash</p>
+              </div>
+            </Link>
           </div>
           <div className="flex items-center justify-around w-full h-full">
-            <Link to={"/historyStudents"}>
+            <Link to={"/history"}>
               <div className="hover:bg-green-200 w-[346px] h-[206px] border rounded-[5px] shadow-md flex flex-col items-center justify-center gap-2">
                 <MdHistory className=" w-[100px] h-[100px] text-green-500" />
                 <p className=" text-[24px] font-semibold font-mono">History</p>
+              </div>
+            </Link>
+            <Link to={"/statistics"}>
+              <div className="hover:bg-green-200 w-[346px] h-[206px] border rounded-[5px] shadow-md flex flex-col items-center justify-center gap-2">
+                <FcStatistics className=" w-[100px] h-[100px] text-green-500" />
+                <p className=" text-[24px] font-semibold font-mono">
+                  Statistics
+                </p>
               </div>
             </Link>
             <div className="hover:bg-yellow-200 w-[346px] h-[206px] border rounded-[5px] shadow-md flex flex-col items-center justify-center gap-2">

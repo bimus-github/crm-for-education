@@ -40,12 +40,12 @@ function Notes() {
       const noteId = await createNote(data);
       dispatch(NoteActions.setNote({ ...data, id: noteId }));
       dispatch(NotesSliceActions.addNote({ ...data, id: noteId }));
-      toast.success("Teacher has successfully been added");
+      toast.success("Note has successfully been added");
       setMessage("");
       setName("");
     } catch (error) {
       console.log(error);
-      toast.error("There was error to add teacher");
+      toast.error("There was error to add note");
     }
   };
 
@@ -60,26 +60,52 @@ function Notes() {
         <div className="w-full h-full bg-white p-4 flex flex-col">
           <div className="w-full snap-normal overflow-auto flex-[5] gap-10 border-b border-black p-2 flex flex-col items-start justify-start">
             {n &&
-              n.map((n) => (
-                <div
-                  key={-n.date}
-                  className="w-auto h-auto p-2 flex flex-col items-start justify-start font-serif font-bold border rounded-md shadow-md"
-                >
-                  <div className="flex-[1] m-1 pl-1 text-blue-300 text-xs mb-2 w-full flex justify-between h-[30px] items-center">
-                    {n?.name}
-                    <div>
-                      <MdDelete
-                        onClick={() => onDeleteNote(n)}
-                        className=" text-red-500 w-[20px] h-[20px] hover:w-[25px] hover:h-[25px] hover:relative"
-                      />
+              n
+                .sort((a, b) => {
+                  return -Number(a.date) + Number(b.date);
+                })
+                .map((n) => (
+                  <div
+                    key={-n.date}
+                    className={`
+                    ${Date.now() - n.date < 86400000 / 2 ? "bg-green-300" : ""} 
+                    ${
+                      Date.now() - n.date < 86400000 &&
+                      Date.now() - n.date > 86400000 / 2
+                        ? "bg-green-200"
+                        : ""
+                    } 
+                    ${
+                      Date.now() - n.date > 86400000 &&
+                      Date.now() - n.date < (86400000 * 3) / 2
+                        ? "bg-green-100"
+                        : ""
+                    } 
+                    ${
+                      Date.now() - n.date > (86400000 * 3) / 2
+                        ? "bg-blue-200"
+                        : ""
+                    } 
+
+                    w-auto h-auto p-2 flex flex-col items-start justify-start font-serif font-bold border rounded-md shadow-md`}
+                  >
+                    <div
+                      className={` capitalize flex-[1] m-1 pl-1 text-blue-400 text-xs mb-2 w-full flex justify-between h-[30px] items-center`}
+                    >
+                      {n?.name}
+                      <div>
+                        <MdDelete
+                          onClick={() => onDeleteNote(n)}
+                          className=" text-red-500 w-[20px] h-[20px] hover:w-[25px] hover:h-[25px] hover:relative"
+                        />
+                      </div>
+                    </div>
+                    <p className="flex-[5]">{n.message}</p>
+                    <div className=" w-full pr-10 flex-[1] text-sm font-light gap-2 m-1 pl-5 flex justify-end items-center">
+                      <p>{moment(n.date).format("LLLL")}</p>
                     </div>
                   </div>
-                  <p className="flex-[5]">{n.message}</p>
-                  <div className=" w-full pr-10 flex-[1] text-sm font-light gap-2 m-1 pl-5 flex justify-end items-center">
-                    <p>{moment(n.date).format("LLLL")}</p>
-                  </div>
-                </div>
-              ))}
+                ))}
           </div>
           <div className="w-full flex-[1] flex items-center justify-center gap-2">
             <div className="flex-[2] h-full flex flex-col items-center justify-start">
