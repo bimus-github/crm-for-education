@@ -25,5 +25,12 @@
       "@/pages/*": ["./pages/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"]
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "src/components/shared/change/teacher",
+    "src/components/shared/charts/ChartofIncome.js",
+    "src/components/shared/charts/server.js"
+  ]
 }

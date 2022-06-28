@@ -1,17 +1,27 @@
-import { ROLE, User } from 'src/models';
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { CASE, ROLE, User } from "src/models";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const initialState: User = {
-  id: '',
-  email: '',
-  firstName: '',
-  lastName: '',
-  phone: '',
+  id: "",
+  email: "",
+  firstName: "",
+  lastName: "",
+  phone: "",
   role: ROLE.TEACHER,
+  about: "",
+  img: "",
+  school: "",
+  startedTime: "",
+  paid: 0,
+  case: CASE.existent,
+  deletedTime: "",
+  group: "",
+  teacher: "",
+  sale: "",
 };
 
 export const userSlice = createSlice({
-  name: 'user',
+  name: "user",
   initialState,
   reducers: {
     setUser: (_, action: PayloadAction<User>) => {

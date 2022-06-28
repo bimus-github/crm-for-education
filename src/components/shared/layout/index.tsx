@@ -1,40 +1,62 @@
-import React from 'react';
-import { Link, matchRoutes, useLocation } from 'react-router-dom';
+import { Link, useLocation } from "react-router-dom";
+import { auth } from "src/lib/firebase/init";
 
 const routes = [
-  { path: '/', title: 'Home' },
-  { path: '/teachers', title: 'Teachers' },
-  { path: '/students', title: 'Students' },
+  {
+    path: "/",
+    title: "Home",
+    subPaths: [
+      "/schedule",
+      "/",
+      "/calendar",
+      "/cash",
+      "/history",
+      "/notes",
+      "/statistics",
+    ],
+  },
+  { path: "/teachers", title: "Teachers" },
+  { path: "/groups", title: "Groups" },
+  { path: "/students", title: "Students" },
+  {
+    path: "/create/teacher",
+    title: "Create",
+    subPaths: ["/create/teacher", "/create/student", "/create/group"],
+  },
 ];
-
-const useCurrentPath = () => {
-  const location = useLocation();
-  const routeList = matchRoutes(routes, location);
-
-  if (routeList?.length) {
-    const route = routeList[0] && routeList[0].route;
-
-    return route.path;
-  }
-};
 
 interface Props {
   children: JSX.Element;
 }
 
 const AppLayout = ({ children }: Props) => {
-  const currentPath = useCurrentPath();
-  console.log(currentPath);
+  const location = useLocation();
+
+  const handleSignOut = () => {
+    auth.signOut();
+  };
+
   return (
-    <div className='min-h-screen w-screen bg-app-background'>
-      <div className='flex justify-between items-center px-16 py-5 bg-app-primary shadow-md'>
-        <div>Logo</div>
+    <div className="min-h-screen bg-app-background">
+      <div className="flex absolute justify-between items-center pr-16 pl-8 h-[70px] w-full bg-app-primary shadow-md">
+        <div className=" flex gap-10">
+          <div
+            className="hover:text-red-500 hover:font-serif hover:relative"
+            onClick={handleSignOut}
+          >
+            SingOut
+          </div>
+          <div>Logo</div>
+        </div>
 
         <nav>
-          <ul className='flex items-center space-x-5'>
+          <ul className="flex items-center space-x-10">
             {routes.map((route, idx) => {
               const classes =
-                currentPath === route.path ? 'text-white font-bold' : '';
+                location.pathname === route.path ||
+                route.subPaths?.includes(location.pathname)
+                  ? "text-white font-bold"
+                  : "";
 
               return (
                 <li key={idx.toString()}>
@@ -48,7 +70,7 @@ const AppLayout = ({ children }: Props) => {
         </nav>
       </div>
 
-      {children}
+      <div className="h-screen pt-[70px]">{children}</div>
     </div>
   );
 };

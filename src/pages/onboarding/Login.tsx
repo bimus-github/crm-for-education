@@ -6,19 +6,46 @@ import toast from 'react-hot-toast';
 
 import { BsPerson } from 'react-icons/bs';
 import { RiLockPasswordLine } from 'react-icons/ri';
+import { getCurrentUser } from 'src/lib/firebase/services/user';
+import { useAppDispatch } from 'src/store/hooks';
+import { UserActions } from 'src/store/features/user';
+import { getSchool } from 'src/lib/firebase/services/school';
+import { User } from 'src/models';
+import { SchoolSliceActions } from 'src/store/features/school';
 
 const Login = () => {
+  const dispatch = useAppDispatch();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    setIsLoading(true);
+
     signInWithEmailAndPassword(auth, email, password)
+<<<<<<< HEAD
       .then((userCredential) => {
         const user = userCredential.user;
+=======
+      .then(async () => {
+        // Signed in
+        const userDoc = (await getCurrentUser(email)) as User | null;
+
+        if (userDoc) {
+          const schoolDoc = await getSchool(userDoc.school);
+
+          dispatch(UserActions.setUser(userDoc));
+          dispatch(SchoolSliceActions.setSchool(schoolDoc));
+
+          setIsLoading(false);
+        }
+>>>>>>> mad/teacher
       })
       .catch((error) => {
+        setIsLoading(false);
         toast.error('Error to sign up');
         const errorCode = error.code;
         const errorMessage = error.message;
@@ -59,6 +86,7 @@ const Login = () => {
         <div className='flex flex-col justify-center items-center'>
           <div>
             <button
+              disabled={isLoading}
               type='submit'
               className='flex items-center text-black justify-center hover:bg-red-400 bg-app-primary h-[40px] w-[340px] rounded-[5px]   text-lg'
             >

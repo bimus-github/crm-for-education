@@ -4,13 +4,30 @@ export enum ROLE {
   STUDENT,
 }
 
+export enum CASE {
+  existent,
+  nonexistent,
+}
+
 export type User = {
   id: string;
+  school: string;
   firstName: string;
   lastName: string;
   email: string;
+  about: string;
   phone: string;
   role: ROLE;
+  img: string;
+  languages?: Language[];
+  sale?: string;
+  teacher?: string;
+  group?: string;
+  startedTime: string;
+  password?: string;
+  paid?: number;
+  case?: CASE;
+  deletedTime?: string;
 };
 
 export type School = {
@@ -18,40 +35,62 @@ export type School = {
   logo: string;
   name: string;
   teachers: string[];
+  admins: string[];
 };
 
-export type Student = User & {};
+export type Language = "en" | "uz" | "ru";
 
-export type Teacher = User & {
-  groups: string[];
-  languages: string[];
-};
+export type Days = "Mon" | "Tue" | "Wed" | "Thurs" | "Fri" | "Sat" | "Sun";
 
-export type Day =
-  | 'Monday'
-  | 'Tuesday'
-  | 'Wednesday'
-  | 'Thursday'
-  | 'Friday'
-  | 'Saturday'
-  | 'Sunday';
+export type Subjects =
+  | "Mathematics"
+  | "Physics"
+  | "Academic English"
+  | "Russian"
+  | "Ona-tili"
+  | "Adabiyot"
+  | "Chemistry"
+  | "Biology"
+  | "Mental Math"
+  | "IELTS"
+  | "Colloquial in Russian"
+  | "Hitory"
+  | "IQ";
 
 export type Group = {
   id: string;
   name: string;
-  language: string;
-  monthlyBill: number;
-  subject: string;
+  case?: CASE;
+  language: {};
+  price: number;
+  startedTime: string;
+  deletedTime?: string;
+  room: string;
+  school: string;
   teacher: {
     user: string;
     monthlyBillPercentage: string;
   };
-  students: string;
   schedule: {
-    days: Day[];
+    days: Days[];
     time: {
-      start: number;
-      end: number;
+      start: string;
+      end: string;
     };
   };
+};
+
+export type Message = {
+  id: string;
+  message: string;
+  name: string;
+  school: string;
+  date: number;
+};
+
+export type ChartLine = {
+  id: string;
+  date: number;
+  numberOfStudents: string;
+  school: string;
 };
